@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -41,6 +42,7 @@ class UserController extends Controller
         'Bachelor of Informatics', 'Bachelor of Information System', 'Bachelor of Visual Communication Design', 'Bachelor of Communication Science'
     ];
 
+    //Auth Contrtoller
     public function showRegistrationForm()
     {
         return view('user.register');
@@ -90,17 +92,24 @@ class UserController extends Controller
         return redirect('/login')->with('error', 'Invalid credentials.');
     }
 
+    public function logout()
+    {
+        auth()->logout();
+
+        return redirect('/login');
+    }
+
     public function index()
     {
         $user = Auth::user();
-        $apply = Apply::where('user_id', $user->id)->with('user', 'status')->first();
+        $apply = Apply::where('user_id', $user->id)->with('user', 'status', 'document')->first();
         // return dd($apply);
         return view('user.home', [
             'apply_data' => $apply
         ]);
     }
 
-    public function apply()
+    public function showApplyForm()
     {
         $apply_data = Apply::where('user_id', Auth::id())->first();
         return view(
@@ -160,6 +169,10 @@ class UserController extends Controller
     
         $success_add_documents = Document::create($userData);
 
+        if (!$success_add_documents) {
+            return redirect('/apply')->with('error', 'Failed to submit application.');
+        }
+
         $applyData = [
             'user_id' => Auth::id(),
             'status_id' => 1,
@@ -170,11 +183,95 @@ class UserController extends Controller
         $success_apply = Apply::create($applyData);
     
         if (!$success_apply) {
-            return redirect('/')->with('error', 'Failed to submit application.');
+            return redirect('/apply')->with('error', 'Failed to submit application.');
         }
     
         return redirect('/')->with('success', 'Application submitted successfully.');
     
     }
+
+    public function showProfile()
+    {
+        $user = Auth::user();
+        $apply = Apply::where('user_id', $user->id)->with('user', 'status', 'document')->first();
+        return view('user.profile', [
+            'apply_data' => $apply
+        ]);
+    }
+
+    public function showUpdateProfileForm()
+    {
+        $email_user = Auth::user();
+        $document = Document::where('email', $email_user->email)->first();
+        return view('user.update_profile', [
+            'countries' => $this->countries,
+            'departments' => $this->departments
+        ], [
+            'document' => $document
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $document = Document::where('email', $user->email)->first();
+
+        $request->validate([
+            'first_name' => 'required',
+            'family_name' => 'required',
+            'phone_number' => 'required',
+            'nationality' => 'required',
+            'passport_number' => 'required',
+            'department' => 'required',
+            'passport' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'research_proposal' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'study_plan' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'english_proficiency' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'transcript' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'medical_checkup' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'first_letter_of_recommendation' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'second_letter_of_recommendation' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+        ]);
+
+        $userData = [
+            'first_name' => $request->first_name,
+            'family_name' => $request->family_name,
+            'email' => $user->email,
+            'phone_number' => $request->phone_number,
+            'nationality' => $request->nationality,
+            'passport_number' => $request->passport_number,
+            'department' => $request->department,
+        ];
+
+        $fileFields = [
+            'passport', 'research_proposal', 'study_plan',
+            'english_proficiency', 'transcript', 'cv',
+            'medical_checkup', 'first_letter_of_recommendation',
+            'second_letter_of_recommendation'
+        ];
+
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                if ($document->$field) {
+                    Storage::delete('public/' . $document->$field);
+                }
+                $path = $request->file($field)->store('public/' . $field);
+                $userData[$field] = str_replace('public/', '', $path);
+            } else {
+                $userData[$field] = $document->$field;
+            }
+        }
+
+        $success_update_documents = $document->update($userData);
+
+        if (!$success_update_documents) {
+            return redirect('/profile/edit')->with('error', 'Failed to update profile.');
+        }
+
+        return redirect('/profile')->with('success', 'Profile updated successfully.');
+    
+    }
+
 
 }

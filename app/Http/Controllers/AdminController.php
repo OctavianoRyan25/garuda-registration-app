@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\Apply;
+use App\Models\Document;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,10 +16,60 @@ class AdminController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function showAdminRegisterForm()
+    {
+        return view('admin.register');
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $created = Admin::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        if(!$created) {
+            return redirect()->route('admin.register')->with('error', 'Failed to create admin');
+        }
+
+        return redirect()->route('admin.register')->with('success', 'Admin created successfully');
+    }
+
+    public function showAdminLoginForm()
+    {
+        return view('admin.login');
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $credentials = $request->only('email', 'password');
+
+        if (auth()->guard('admin')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->route('admin.index');
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
+    }
+    
     public function index()
     {
         // Show the number of users every each nationlity
-        $results = DB::table('users')
+        $results = DB::table('documents')
             ->select('nationality as NATIONALITY', DB::raw('COUNT(nationality) as COUNTER'))
             ->groupBy('nationality')
             ->orderBy('nationality', 'asc')
@@ -31,13 +83,13 @@ class AdminController extends Controller
             ];
         });
 
-        $regionCount = User::distinct('nationality')->count('region');
+        $regionCount = Document::distinct('nationality')->count('region');
 
-        $departmentCount = User::distinct('department')->count('departments');
+        $departmentCount = Document::distinct('department')->count('departments');
 
         return view('admin.index',[
-            'count_user_today' => User::where('created_at', '>=', Carbon::today())->count(),
-            'count_user' => User::count(),
+            'count_user_today' => Document::where('created_at', '>=', Carbon::today())->count(),
+            'count_user' => Document::count(),
             'data' => $data,
             'region_count' => $regionCount,
             'department_count' => $departmentCount
@@ -46,7 +98,7 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        $applicant = Apply::with('user', 'status')->get();
+        $applicant = Apply::with('user', 'status', 'document')->get();
         return view('admin.table',
             [
                 'applicants' => $applicant

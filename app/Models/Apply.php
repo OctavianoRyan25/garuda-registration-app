@@ -12,7 +12,8 @@ class Apply extends Model
     protected $fillable = [
         'user_id',
         'no_register',
-        'status_id'
+        'status_id',
+        'document_id',
     ];
 
     public function user()
@@ -23,5 +24,10 @@ class Apply extends Model
     public function status()
     {
         return $this->belongsTo(Status::class);
+    }
+
+    public function document()
+    {
+        return $this->belongsTo(Document::class);
     }
 }

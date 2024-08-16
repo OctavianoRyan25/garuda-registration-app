@@ -25,11 +25,10 @@ Route::get('/table/user', [AdminController::class, 'dashboard'])->name('admin.ta
 
 
 // User Routes
-// Register Routes
+
+// Auth User Routes
 Route::get('register', [UserController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [UserController::class, 'register'])->name('user.register');
-
-// Login Routes
 Route::get('login', [UserController::class, 'showLoginForm'])->name('login');
 Route::post('login', [UserController::class, 'login'])->name('user.login');
 Route::post('logout', [UserController::class, 'logout'])->name('logout');
@@ -38,6 +37,9 @@ Route::post('logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('user.index');
     Route::get('/home', [UserController::class, 'index'])->name('user.index');
-    Route::get('/apply', [UserController::class, 'apply'])->name('user.apply');
+    Route::get('/apply', [UserController::class, 'showApplyForm'])->name('user.apply');
     Route::post('/apply', [UserController::class, 'submitApplication'])->name('user.submitApplication');
+    Route::get('/profile', [UserController::class, 'showProfile'])->name('user.profile');
+    Route::get('/profile/edit', [UserController::class, 'showUpdateProfileForm'])->name('user.updateProfile');
+    Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('user.updateProfile');
 });

@@ -9,14 +9,16 @@
                 <div class="flex justify-center">
                     @if($apply_data)
                         <div class="w-full lg:w-11/12 bg-white p-8 rounded-xl mx-3">
-                            <h3 class="text-2xl font-bold text-center">Register</h3>
-                            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-3" role="alert">
-                                <p class="font-bold">Announecement!</p>
-                                <p>Your have registered this form.</p>
-                            </div>
                             {{-- Image Sucess --}}
                             <img src="{{ asset('assets/success.jpg') }}" alt="success" class="w-1/2 mx-auto">
-                            {{-- Show data --}}
+                            {{-- Information --}}
+                            <div class="flex justify-center">
+                                <p class="text-center text-gray-500">Yeay, your Application Has Been Submitted Successfully</p>
+                            </div>
+                            {{-- Button --}}
+                            <div class="flex justify-center">
+                                <a href="{{ route('user.index') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-3">Back</a>
+                            </div>
                         </div>
                     @else
                         <div class="w-full lg:w-11/12 bg-white p-8 rounded-xl mx-3">
