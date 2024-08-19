@@ -60,13 +60,23 @@
                                                     <span class="font-medium">{{ $apply_data->document->department }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
-                                                    <span>Status:</span>
-                                                    @if($apply_data->status->name == 'rejected')
+                                                    <span>Administration Selection:</span>
+                                                    @if($apply_data->status->name == 'Rejected')
                                                         <span class="font-medium text-red-500">{{ $apply_data->status->name }}</span>
-                                                    @elseif($apply_data->status->name == 'accepted')
+                                                    @elseif($apply_data->status->name == 'Accepted')
                                                         <span class="rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ $apply_data->status->name }}</span>
                                                     @else
                                                     <span class="rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">{{ $apply_data->status->name }}</span>
+                                                    @endif
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span>Status 2:</span>
+                                                    @if($apply_data->secondStatus->name == 'Rejected')
+                                                        <span class="font-medium text-red-500">{{ $apply_data->secondStatus->name }}</span>
+                                                    @elseif($apply_data->secondStatus->name == 'Accepted')
+                                                        <span class="rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ $apply_data->secondStatus->name }}</span>
+                                                    @else
+                                                    <span class="rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">{{ $apply_data->secondStatus->name }}</span>
                                                     @endif
                                                 </div>
                                             </div>

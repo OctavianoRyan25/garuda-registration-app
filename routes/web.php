@@ -17,24 +17,46 @@ use Illuminate\Support\Facades\Route;
 */
 
 //Admin Routes
-Route::get('/', [UserController::class, 'index'])->name('user.index');
-Route::post('/store', [UserController::class, 'store'])->name('user.store');
+// Auth Admin Routes
+Route::prefix('admin')->group(function () {
+    Route::get('register', [AdminController::class, 'showAdminRegisterForm'])->name('admin.register');
+    Route::post('register', [AdminController::class, 'register'])->name('admin.register');
+    Route::get('login', [AdminController::class, 'showAdminLoginForm'])->name('admin.login');
+    Route::post('login', [AdminController::class, 'login'])->name('admin.login');
+});
 
-Route::resource('admin', AdminController::class);
-Route::get('/table/user', [AdminController::class, 'dashboard'])->name('admin.table');
+Route::middleware(['auth:admin', 'admin'])->group(function () {
+    Route::post('logout', [AdminController::class, 'logout'])->name('admin.logout');
+    Route::resource('admin', AdminController::class);
+    Route::get('/table/user', [AdminController::class, 'dashboard'])->name('admin.table');
+    // Status
+    Route::get('/table/user/status', [AdminController::class, 'status'])->name('admin.status');
+    Route::post('/table/user/{id}/approve', [AdminController::class, 'approve'])->name('admin.approve');
+    Route::post('/table/user/{id}/reject', [AdminController::class, 'reject'])->name('admin.reject');
+    Route::post('/table/user/{id}/second-approve', [AdminController::class, 'approveSecond'])->name('admin.approveSecond');
+    Route::post('/table/user/{id}/second-reject', [AdminController::class, 'rejectSecond'])->name('admin.rejectSecond');
+    // Blog
+    Route::get('/blog', [AdminController::class, 'blog'])->name('admin.blog');
+    Route::get('/blog/create', [AdminController::class, 'showCreateBlogForm'])->name('admin.createBlog');
+    Route::post('/blog/store', [AdminController::class, 'storeBlog'])->name('admin.storeBlog');
+    Route::get('/blog/{id}/edit', [AdminController::class, 'showEditBlogForm'])->name('admin.editBlog');
+    Route::put('/blog/{id}/update', [AdminController::class, 'updateBlog'])->name('admin.updateBlog');
+    Route::delete('/blog/{id}/delete', [AdminController::class, 'deleteBlog'])->name('admin.deleteBlog');
+});
 
 
 // User Routes
-
 // Auth User Routes
-Route::get('register', [UserController::class, 'showRegistrationForm'])->name('register');
-Route::post('register', [UserController::class, 'register'])->name('user.register');
-Route::get('login', [UserController::class, 'showLoginForm'])->name('login');
-Route::post('login', [UserController::class, 'login'])->name('user.login');
-Route::post('logout', [UserController::class, 'logout'])->name('logout');
+Route::middleware(['guest:web'])->group(function () {
+    Route::get('register', [UserController::class, 'showRegistrationForm'])->name('register');
+    Route::post('register', [UserController::class, 'register'])->name('user.register');
+    Route::get('login', [UserController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [UserController::class, 'login'])->name('user.login');
+});
 
 // Protected Routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth:web'])->group(function () {
+    Route::post('logout', [UserController::class, 'logout'])->name('logout');
     Route::get('/', [UserController::class, 'index'])->name('user.index');
     Route::get('/home', [UserController::class, 'index'])->name('user.index');
     Route::get('/apply', [UserController::class, 'showApplyForm'])->name('user.apply');

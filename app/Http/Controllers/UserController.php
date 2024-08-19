@@ -83,7 +83,7 @@ class UserController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (auth()->attempt($credentials)) {
+        if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
 
             return redirect()->intended('/');
@@ -94,7 +94,7 @@ class UserController extends Controller
 
     public function logout()
     {
-        auth()->logout();
+        Auth::guard('web')->logout();
 
         return redirect('/login');
     }
@@ -102,7 +102,7 @@ class UserController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $apply = Apply::where('user_id', $user->id)->with('user', 'status', 'document')->first();
+        $apply = Apply::where('user_id', $user->id)->with('user', 'status', 'secondStatus', 'document')->first();
         // return dd($apply);
         return view('user.home', [
             'apply_data' => $apply
@@ -176,6 +176,7 @@ class UserController extends Controller
         $applyData = [
             'user_id' => Auth::id(),
             'status_id' => 1,
+            'second_status_id' => 4,
             'document_id' => $success_add_documents->id,
             'no_register' => 'PMB-'.rand(1000, 9999),
         ];

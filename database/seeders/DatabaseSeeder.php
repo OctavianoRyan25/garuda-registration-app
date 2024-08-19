@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Admin;
+use App\Models\Blog;
+use App\Models\SecondStatus;
 use App\Models\status;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -15,16 +18,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(100)->create();
+        // User::factory(100)->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
 
-        status::create(['name' => 'Registered']);
-        status::create(['name' => 'Processed']);
+        status::create(['name' => 'Pending']);
         status::create(['name' => 'Approved']);
         status::create(['name' => 'Rejected']);
+
+        SecondStatus::create(['name' => 'Pending']);
+        SecondStatus::create(['name' => 'Approved']);
+        SecondStatus::create(['name' => 'Rejected']);
+
+        Admin::create([
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('password'),
+        ]);
+
+        Blog::factory(20)->create();
     }
 }

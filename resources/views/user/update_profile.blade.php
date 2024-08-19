@@ -4,10 +4,10 @@
 
 @section('content')
         {{-- Form --}}
-        <section class="bg-gray-100 py-3 md:py-5">
+        <section class="bg-gray-100 py-3 md:py-3">
             <div class="container">
                 <div class="flex justify-center">
-                    <div class="w-full lg:w-11/12 bg-white p-8 rounded-xl mx-3">
+                    <div class="w-full lg:w-full bg-white p-8 rounded-xl mx-3">
                         <h3 class="text-2xl font-bold text-center">Update Your Profile</h3>
                         {{-- Session has success --}}
                         @if (session('success'))

@@ -4,11 +4,11 @@
 
 @section('content')
         {{-- Form --}}
-        <section class="bg-gray-100 py-3 md:py-5">
+        <section class="bg-gray-100 py-3 md:py-3">
             <div class="container">
                 <div class="flex justify-center">
                     @if($apply_data)
-                        <div class="w-full lg:w-11/12 bg-white p-8 rounded-xl mx-3">
+                        <div class="w-full lg:w-full bg-white p-8 rounded-xl mx-3">
                             {{-- Image Sucess --}}
                             <img src="{{ asset('assets/success.jpg') }}" alt="success" class="w-1/2 mx-auto">
                             {{-- Information --}}
@@ -21,7 +21,7 @@
                             </div>
                         </div>
                     @else
-                        <div class="w-full lg:w-11/12 bg-white p-8 rounded-xl mx-3">
+                        <div class="w-full lg:w-full bg-white p-8 rounded-xl mx-3">
                             <h3 class="text-2xl font-bold text-center">Register</h3>
                             {{-- Session has success --}}
                             @if (session('success'))
@@ -42,14 +42,14 @@
                                 <div class="flex flex-wrap mb-4">
                                     <div class="w-full px-3 xl:w-1/2">
                                         <label for="first_name" class="text-sm font-bold text-gray-600">First Name</label>
-                                        <input type="text" name="first_name" id="first_name" class="border border-gray-300 p-2 rounded-md mt-1 w-full">
+                                        <input type="text" name="first_name" id="first_name" class="border border-gray-300 p-2 rounded-md mt-1 w-full" placeholder="john">
                                         @error('first_name')
                                             <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="w-full px-3 xl:w-1/2">
                                         <label for="family_name" class="text-sm font-bold text-gray-600">Family Name</label>
-                                        <input type="text" name="family_name" id="family_name" class="border border-gray-300 p-2 rounded-md mt-1 w-full">
+                                        <input type="text" name="family_name" id="family_name" class="border border-gray-300 p-2 rounded-md mt-1 w-full" placeholder="doe">
                                         @error('family_name')
                                             <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                         @enderror
@@ -65,7 +65,7 @@
                                     </div>
                                     <div class="w-full px-3 xl:w-1/2">
                                         <label for="phone_number" class="text-sm font-bold text-gray-600">Phone or Whatsapp Number</label>
-                                        <input type="text" name="phone_number" id="phone_number" class="border border-gray-300 p-2 rounded-md mt-1 w-full">
+                                        <input type="text" name="phone_number" id="phone_number" class="border border-gray-300 p-2 rounded-md mt-1 w-full" placeholder="+62 8123 4567 8910">
                                         @error('phone_number')
                                             <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                         @enderror

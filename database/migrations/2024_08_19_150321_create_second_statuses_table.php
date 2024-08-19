@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('applies', function (Blueprint $table) {
+        Schema::create('second_statuses', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->string('no_register');
-            $table->integer('status_id');
-            $table->integer('second_status_id');
-            $table->string('document_id');
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -27,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('applies');
+        Schema::dropIfExists('second_statuses');
     }
 };

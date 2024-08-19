@@ -26,12 +26,11 @@
                     @endif
                     {{-- Show Data in form --}}
                     <!-- component -->
-                    <div class="bg-white flex">
-                        <div>
-                            <div class="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
+                    <div class="flex">
+                            <div class="p-4 px-4 md:p-8 mb-6">
                                 <div class="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
                                     <div class="text-gray-600">
-                                        <p class="font-medium text-lg">Personal Details</p>
+                                        <p class="text-lg font-bold">Personal Details</p>
                                     </div>
                                     <div class="lg:col-span-2">
                                         <div class="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-6">
@@ -109,7 +108,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+
                     </div>
                     <!-- Modal -->
                     <div x-show="isOpen" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center">
