@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 //Admin Routes
 // Auth Admin Routes
-Route::prefix('admin')->group(function () {
+Route::middleware(['guest:admin'])->prefix('admin')->group(function () {
     Route::get('register', [AdminController::class, 'showAdminRegisterForm'])->name('admin.register');
     Route::post('register', [AdminController::class, 'register'])->name('admin.register');
     Route::get('login', [AdminController::class, 'showAdminLoginForm'])->name('admin.login');
@@ -26,17 +26,22 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::middleware(['auth:admin', 'admin'])->group(function () {
-    Route::post('logout', [AdminController::class, 'logout'])->name('admin.logout');
+    Route::post('logout-admin', [AdminController::class, 'logout'])->name('admin.logout');
     Route::resource('admin', AdminController::class);
     Route::get('/table/user', [AdminController::class, 'dashboard'])->name('admin.table');
+    Route::get('/table/user/{id}', [AdminController::class, 'showApplicant'])->name('admin.showApplicant');
+    Route::get('/table/user/{id}/edit', [AdminController::class, 'showEditFrom'])->name('admin.showEditForm');
+    Route::put('/table/user/{id}/update', [AdminController::class, 'update'])->name('admin.updateDocument');
+    Route::get('/table/export-data', [AdminController::class, 'exportApplicant'])->name('admin.exportApplicant');
     // Status
-    Route::get('/table/user/status', [AdminController::class, 'status'])->name('admin.status');
+    Route::get('/table/user-status', [AdminController::class, 'status'])->name('admin.status');
     Route::post('/table/user/{id}/approve', [AdminController::class, 'approve'])->name('admin.approve');
     Route::post('/table/user/{id}/reject', [AdminController::class, 'reject'])->name('admin.reject');
     Route::post('/table/user/{id}/second-approve', [AdminController::class, 'approveSecond'])->name('admin.approveSecond');
     Route::post('/table/user/{id}/second-reject', [AdminController::class, 'rejectSecond'])->name('admin.rejectSecond');
     // Blog
     Route::get('/blog', [AdminController::class, 'blog'])->name('admin.blog');
+    Route::get('/blog/{id}/preview', [AdminController::class, 'showBlog'])->name('admin.showBlog');
     Route::get('/blog/create', [AdminController::class, 'showCreateBlogForm'])->name('admin.createBlog');
     Route::post('/blog/store', [AdminController::class, 'storeBlog'])->name('admin.storeBlog');
     Route::get('/blog/{id}/edit', [AdminController::class, 'showEditBlogForm'])->name('admin.editBlog');

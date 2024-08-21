@@ -8,7 +8,7 @@
         <div class="flex justify-start">
             <div class="w-full lg:w-full bg-white p-8 rounded-xl mx-3">
                 @if($apply_data == null)
-                    <img src="{{ asset('assets/failed.jpg') }}" alt="success" class="w-1/2 mx-auto scale-75">
+                    <img src="{{ asset('assets/failed.jpg') }}" alt="success" class="mx-auto w-full lg:w-5/12">
                     {{-- Information --}}
                     <div class="flex justify-center">
                         <p class="text-center text-gray-500">You have not applied for any scholarship yet. Please click the button below to apply for a scholarship.</p>

@@ -16,16 +16,17 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.storeBlog') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <form action="{{ route('admin.updateBlog', $blog->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
+                @method('PUT')
                 <div class="form-group">
                     <label for="title" class="block text-lg font-semibold text-gray-700">Title</label>
-                    <input type="text" class="form-control mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="title" name="title" value="{{ old('title') }}">
+                    <input type="text" class="form-control mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="title" name="title" value="{{ $blog->title }}"></input>
                 </div>
 
                 <div class="form-group">
                     <label for="body" class="block text-lg font-semibold text-gray-700">Body</label>
-                    <textarea class="form-control mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="body" name="body" value="{{ old('body') }}"></textarea>
+                    <textarea class="form-control mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" id="body" name="body">{{ $blog->body }}</textarea>
                 </div>
 
                 <div class="form-group">

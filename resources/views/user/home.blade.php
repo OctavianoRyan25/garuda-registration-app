@@ -12,7 +12,7 @@
                         <p class="font-bold">Note!</p>
                         <p>You have not applied for any scholarship yet. You can apply <a class="font-semibold underline" href="/apply">Here</a></p>
                     </div>
-                    <img src="{{ asset('assets/failed.jpg') }}" alt="success" class="w-1/2 mx-auto scale-75">
+                    <img src="{{ asset('assets/failed.jpg') }}" alt="success" class="mx-auto w-full lg:w-5/12">
                 @else
                 @if(session('success'))
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-3" role="alert">
@@ -41,23 +41,23 @@
                                             <div class="grid gap-2">
                                                 <div class="flex items-center justify-between">
                                                     <span>First Name:</span>
-                                                    <span class="font-medium">{{ $apply_data->document->first_name }}</span>
+                                                    <span class="text-xs md:font-medium">{{ $apply_data->document->first_name }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
                                                     <span>Last Name:</span>
-                                                    <span class="font-medium">{{ $apply_data->document->family_name }}</span>
+                                                    <span class="text-xs md:text-base md:font-medium">{{ $apply_data->document->family_name }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
                                                     <span>Phone:</span>
-                                                    <span class="font-medium">{{ $apply_data->document->phone_number }}</span>
+                                                    <span class="text-xs md:text-base md:font-medium">{{ $apply_data->document->phone_number }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
                                                     <span>Nationality:</span>
-                                                    <span class="font-medium">{{ $apply_data->document->nationality }}</span>
+                                                    <span class="text-xs md:text-base md:font-medium">{{ $apply_data->document->nationality }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
                                                     <span>Department:</span>
-                                                    <span class="font-medium">{{ $apply_data->document->department }}</span>
+                                                    <span class="text-xs md:text-base md:font-medium">{{ $apply_data->document->department }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
                                                     <span>Administration Selection:</span>

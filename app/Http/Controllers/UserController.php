@@ -7,8 +7,10 @@ use App\Models\Document;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class UserController extends Controller
 {
@@ -55,18 +57,28 @@ class UserController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
-        $userData = [
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ];
+        DB::beginTransaction();
 
-        $success = User::create($userData);
-
-        if (!$success) {
+        try {
+            $userData = [
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ];
+    
+            $success = User::create($userData);
+    
+            if (!$success) {
+                return redirect('/register')->with('error', 'Failed to register.');
+            }
+    
+            DB::commit();
+    
+            return redirect('/login')->with('success', 'Registration successful.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+    
             return redirect('/register')->with('error', 'Failed to register.');
         }
-
-        return redirect('/login')->with('success', 'Registration successful.');
     }
 
     public function showLoginForm()
@@ -96,7 +108,7 @@ class UserController extends Controller
     {
         Auth::guard('web')->logout();
 
-        return redirect('/login');
+        return redirect('/login')->with('success', 'Logout successful.');
     }
 
     public function index()
@@ -143,52 +155,54 @@ class UserController extends Controller
             'second_letter_of_recommendation' => 'required|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
-        $userData = [
-            'first_name' => $request->first_name,
-            'family_name' => $request->family_name,
-            'email' => Auth::user()->email,
-            'phone_number' => $request->phone_number,
-            'nationality' => $request->nationality,
-            'passport_number' => $request->passport_number,
-            'department' => $request->department,
-        ];
-    
-        $fileFields = [
-            'passport', 'research_proposal', 'study_plan',
-            'english_proficiency', 'transcript', 'cv',
-            'medical_checkup', 'first_letter_of_recommendation',
-            'second_letter_of_recommendation'
-        ];
+        DB::beginTransaction();
 
-        foreach ($fileFields as $field) {
-            if ($request->hasFile($field)) {
-                $path = $request->file($field)->store('public/' . $field);
-                $userData[$field] = str_replace('public/', '', $path);
-            }
-        }   
-    
-        $success_add_documents = Document::create($userData);
-
-        if (!$success_add_documents) {
-            return redirect('/apply')->with('error', 'Failed to submit application.');
-        }
-
-        $applyData = [
-            'user_id' => Auth::id(),
-            'status_id' => 1,
-            'second_status_id' => 4,
-            'document_id' => $success_add_documents->id,
-            'no_register' => 'PMB-'.rand(1000, 9999),
-        ];
+        try {
+            $userData = [
+                'first_name' => $request->first_name,
+                'family_name' => $request->family_name,
+                'email' => Auth::user()->email,
+                'phone_number' => $request->phone_number,
+                'nationality' => $request->nationality,
+                'passport_number' => $request->passport_number,
+                'department' => $request->department,
+            ];
         
-        $success_apply = Apply::create($applyData);
+            $fileFields = [
+                'passport', 'research_proposal', 'study_plan',
+                'english_proficiency', 'transcript', 'cv',
+                'medical_checkup', 'first_letter_of_recommendation',
+                'second_letter_of_recommendation'
+            ];
     
-        if (!$success_apply) {
-            return redirect('/apply')->with('error', 'Failed to submit application.');
+            foreach ($fileFields as $field) {
+                if ($request->hasFile($field)) {
+                    $path = $request->file($field)->store('public/' . $field);
+                    $userData[$field] = str_replace('public/', '', $path);
+                }
+            }   
+        
+            $success_add_documents = Document::create($userData);
+
+            $applyData = [
+                'user_id' => Auth::id(),
+                'status_id' => 1,
+                'second_status_id' => 4,
+                'document_id' => $success_add_documents->id,
+                'no_register' => 'PMB-'.rand(1000, 9999),
+            ];
+            
+            Apply::create($applyData);
+
+            DB::commit();
+
+            Alert::toast('Documents uploaded successfully.', 'success');
+            return redirect('/apply');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return redirect('/apply');
         }
-    
-        return redirect('/')->with('success', 'Application submitted successfully.');
-    
     }
 
     public function showProfile()
@@ -217,6 +231,10 @@ class UserController extends Controller
         $user = Auth::user();
         $document = Document::where('email', $user->email)->first();
 
+        if (!$document) {
+            return redirect('/profile/edit')->with('error', 'Failed to update profile.');
+        }
+
         $request->validate([
             'first_name' => 'required',
             'family_name' => 'required',
@@ -235,42 +253,52 @@ class UserController extends Controller
             'second_letter_of_recommendation' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
         ]);
 
-        $userData = [
-            'first_name' => $request->first_name,
-            'family_name' => $request->family_name,
-            'email' => $user->email,
-            'phone_number' => $request->phone_number,
-            'nationality' => $request->nationality,
-            'passport_number' => $request->passport_number,
-            'department' => $request->department,
-        ];
+        DB::beginTransaction();
 
-        $fileFields = [
-            'passport', 'research_proposal', 'study_plan',
-            'english_proficiency', 'transcript', 'cv',
-            'medical_checkup', 'first_letter_of_recommendation',
-            'second_letter_of_recommendation'
-        ];
+        try{
 
-        foreach ($fileFields as $field) {
-            if ($request->hasFile($field)) {
-                if ($document->$field) {
-                    Storage::delete('public/' . $document->$field);
+            $userData = [
+                'first_name' => $request->first_name,
+                'family_name' => $request->family_name,
+                'email' => $user->email,
+                'phone_number' => $request->phone_number,
+                'nationality' => $request->nationality,
+                'passport_number' => $request->passport_number,
+                'department' => $request->department,
+                'updated_at' => now()
+            ];
+
+            $fileFields = [
+                'passport', 'research_proposal', 'study_plan',
+                'english_proficiency', 'transcript', 'cv',
+                'medical_checkup', 'first_letter_of_recommendation',
+                'second_letter_of_recommendation'
+            ];
+
+            foreach ($fileFields as $field) {
+                if ($request->hasFile($field)) {
+                    if ($document->$field) {
+                        Storage::delete('public/' . $document->$field);
+                    }
+                    $path = $request->file($field)->store('public/' . $field);
+                    $userData[$field] = str_replace('public/', '', $path);
+                } else {
+                    $userData[$field] = $document->$field;
                 }
-                $path = $request->file($field)->store('public/' . $field);
-                $userData[$field] = str_replace('public/', '', $path);
-            } else {
-                $userData[$field] = $document->$field;
             }
+
+            $document->update($userData);
+
+            DB::commit();
+            
+            Alert::toast('Documents uploaded successfully.', 'success');
+            return redirect('/profile');
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Alert::toast('Failed to update profile.', 'error');
+            return redirect('/profile/edit');
         }
-
-        $success_update_documents = $document->update($userData);
-
-        if (!$success_update_documents) {
-            return redirect('/profile/edit')->with('error', 'Failed to update profile.');
-        }
-
-        return redirect('/profile')->with('success', 'Profile updated successfully.');
     
     }
 

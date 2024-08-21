@@ -48,7 +48,6 @@
                     </svg>
                     Profile
                 </a>
-                    @csrf
                 <form method="POST" action="{{ route('logout') }}" class="flex items-center px-4 py-2 mt-2 text-sm font-semibold text-gray-900 bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 hover:bg-blue-700 hover:text-white focus:text-gray-900 focus:bg-gray-200 focus:outline-none focus:shadow-outline" href="#">
                     @csrf
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16">
@@ -89,6 +88,7 @@
                 </div>
             </nav>
             <!-- Content -->  
+            @include('sweetalert::alert')
             @yield('content')
             {{-- Footer --}}
             <footer class="py-4 mt-8 border-t">

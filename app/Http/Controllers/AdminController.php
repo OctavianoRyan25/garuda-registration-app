@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ApplyExport;
 use App\Models\Admin;
 use App\Models\Apply;
 use App\Models\Blog;
@@ -11,7 +12,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use RealRashid\SweetAlert\Facades\Alert as FacadesAlert;
+use SebastianBergmann\CodeCoverage\Report\Html\Facade;
 
 class AdminController extends Controller
 {
@@ -58,6 +63,7 @@ class AdminController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::guard('admin')->attempt($credentials)) {
+            FacadesAlert::success('Success', 'Login successful');
             return redirect()->route('admin.index');
         }
 
@@ -67,7 +73,7 @@ class AdminController extends Controller
     public function logout()
     {
         Auth::guard('admin')->logout();
-        return redirect('/admin/login');
+        return redirect('/admin/login')->with('success', 'Logout successful.');
     }
 
     // Controller for Admin Dashboard
@@ -102,9 +108,17 @@ class AdminController extends Controller
         ]);
     }
 
+    public function exportApplicant()
+    {
+        return Excel::download(new ApplyExport, 'applicants.xlsx');
+    }
+
     public function dashboard()
     {
-        $applicant = Apply::with('user', 'status', 'document')->get();
+        $title = 'Delete User!';
+        $text = "Are you sure you want to delete?";
+        confirmDelete($title, $text);
+        $applicant = Apply::with('user', 'document')->get();
         return view('admin.table',
             [
                 'applicants' => $applicant
@@ -131,12 +145,20 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    // public function show(string $id)
+    // {
+    //     $user = Auth::user();
+    //     $apply = Apply::where('user_id', $user->id)->with('user', 'status', 'document')->first();
+    //     return view('admin.show', [
+    //         'apply_data' => $apply
+    //     ]);
+    // }
+
+    public function showApplicant(string $id)
     {
-        $user = Auth::user();
-        $apply = Apply::where('user_id', $user->id)->with('user', 'status', 'document')->first();
+        $applicant = Apply::where('id', $id)->with('user', 'status', 'document')->first();
         return view('admin.show', [
-            'apply_data' => $apply
+            'apply_data' => $applicant
         ]);
     }
 
@@ -159,16 +181,23 @@ class AdminController extends Controller
     
     public function destroy(string $id)
     {
+        $apply = Apply::find($id);
+        if (!$apply) {
+            return redirect()->route('admin.table')->with('error', 'Data not found');
+        }
+
+        DB::beginTransaction();
         try {
-            $delete_data = Apply::destroy($id);
-            if ($delete_data) {
-                return redirect()->route('admin.table')->with('success', 'Data has been deleted successfully');
-            } else {
-                return redirect()->route('admin.table')->with('error', 'Data failed to delete');
-            }
-        } catch (\Exception $th) {
-            Log::error($th);
-            return redirect()->route('admin.table')->with('error', 'Data failed to delete' . $th->getMessage());
+            $apply->delete();
+            $apply->document->delete();
+
+            DB::commit();
+
+            FacadesAlert::toast('Data has been deleted', 'success');
+            return redirect()->route('admin.table');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('admin.table')->with('error', 'Failed to delete data');
         }
     }
 
@@ -217,6 +246,10 @@ class AdminController extends Controller
     public function rejectSecond(string $id)
     {
         $apply = Apply::find($id);
+        // Check if the first status has been approved
+        if ($apply->status_id != 2) {
+            return redirect()->route('admin.status')->with('error', 'Please approve the first status first');
+        }
         $apply->second_status_id = 3;
         $apply->save();
         return redirect()->route('admin.status')->with('success', 'Application has been rejected');
@@ -225,9 +258,20 @@ class AdminController extends Controller
     // Controller for manage blog
     public function blog()
     {
+        $title = 'Delete User!';
+        $text = "Are you sure you want to delete?";
+        confirmDelete($title, $text);
         $blogs = Blog::all();
         return view('admin.blog', [
             'blogs' => $blogs
+        ]);
+    }
+
+    public function showBlog(string $id)
+    {
+        $blog = Blog::find($id);
+        return view('admin.view_blog', [
+            'blog' => $blog
         ]);
     }
 
@@ -241,28 +285,40 @@ class AdminController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
+            'image' => 'required|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $created = DB::table('blogs')->insert([
-            'title' => $request->title,
-            'slug' => Str::slug($request->title),
-            'image' => $request->image,
-            'body' => $request->body,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now()
-        ]);
+        DB::beginTransaction();
+        try {
+            $blog = [
+                'title' => $request->title,
+                'slug' => Str::slug($request->title),
+                'body' => $request->body,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ];
+    
+            if($request->hasFile('image')) {
+                $image = $request->file('image')->store('public/blogs');
+                $blog['image'] = str_replace('public/', '', $image);
+            }
+    
+            Blog::create($blog);
 
-        if(!$created) {
+            DB::commit();
+
+            FacadesAlert::toast('Blog created successfully', 'success');
+            return redirect()->route('admin.blog');
+        } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect()->route('admin.createBlog')->with('error', 'Failed to create blog');
         }
-
-        return redirect()->route('admin.blog')->with('success', 'Blog created successfully');
     }
 
     public function showEditBlogForm(string $id)
     {
         $blog = DB::table('blogs')->where('id', $id)->first();
-        return view('admin.editBlog', [
+        return view('admin.edit_blog', [
             'blog' => $blog
         ]);
     }
@@ -272,32 +328,70 @@ class AdminController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
+            'image' => 'nullable|mimes:jpg,jpeg,png|max:2048',
         ]);
-
-        $updated = DB::table('blogs')->where('id', $id)->update([
-            'title' => $request->title,
-            'slug' => Str::slug($request->title),
-            'image' => $request->image,
-            'body' => $request->body,
-            'updated_at' => Carbon::now()
-        ]);
-
-        if(!$updated) {
+    
+        $blog = Blog::find($id);
+    
+        if (!$blog) {
+            return redirect()->route('admin.editBlog', $id)->with('error', 'Blog not found');
+        }
+    
+        DB::beginTransaction();
+    
+        try {
+            $blogData = [
+                'title' => $request->title,
+                'slug' => Str::slug($request->title),
+                'body' => $request->body,
+                'updated_at' => Carbon::now()
+            ];
+    
+            if ($request->hasFile('image')) {
+                if ($blog->image) {
+                    Storage::delete('public/' . $blog->image);
+                }
+    
+                $image = $request->file('image')->store('public/blogs');
+                $blogData['image'] = str_replace('public/', '', $image);
+            }
+    
+            $blog->update($blogData);
+    
+            DB::commit();
+            
+            FacadesAlert::toast('Blog updated successfully', 'success');
+            return redirect()->route('admin.blog');
+        } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->route('admin.editBlog', $id)->with('error', 'Failed to update blog');
         }
-
-        return redirect()->route('admin.blog')->with('success', 'Blog updated successfully');
     }
 
     public function deleteBlog(string $id)
     {
-        $deleted = DB::table('blogs')->where('id', $id)->delete();
+        DB::beginTransaction();
+        try {
+            $blog = Blog::find($id);
 
-        if(!$deleted) {
+            if (!$blog) {
+                return redirect()->route('admin.blog')->with('error', 'Blog not found');
+            }
+
+            // Hapus gambar jika ada
+            if ($blog->image) {
+                Storage::delete('public/' . $blog->image);
+            }
+
+            // Hapus blog
+            $blog->delete();
+
+            DB::commit();
+            FacadesAlert::toast('Blog deleted successfully', 'success');
+            return redirect()->route('admin.blog');
+        } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->route('admin.blog')->with('error', 'Failed to delete blog');
         }
-
-        return redirect()->route('admin.blog')->with('success', 'Blog deleted successfully');
     }
-
 }
