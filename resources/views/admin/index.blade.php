@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-wrap w-full mt-10 gap-3">
+        <div class="flex flex-wrap w-full mt-10">
             <div class="w-full xl:w-1/2 p-2">
                 <h2 class="text-lg font-semibold text-gray-900">Users by Nationality</h2>
                 <div class="relative h-96">
@@ -51,16 +51,39 @@
                 </div>
             </div>
             <div class="w-full xl:w-1/2 p-2">
-                <h2 class="text-lg font-semibold text-gray-900">Users by Nationality</h2>
-                <div class="relative h-96">
-                    <canvas id="myChart2"></canvas>
+                <h2 class="text-lg font-semibold text-gray-900">Users by Department</h2>
+                <div class="relative">
+                    <div class="flex flex-col">
+                        <div class="-m-1.5 overflow-x-auto">
+                            <div class="p-1.5 min-w-full inline-block align-middle">
+                                <div class="overflow-hidden">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Name</th>
+                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Total</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($data_department as $department)
+                                        <tr class="odd:bg-white even:bg-gray-100 hover:bg-gray-100">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $department->DEPARTMENT }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $department->COUNTER }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             // Pass data from Laravel to JavaScript
-            window.chartData = @json($data);
+            window.chartData = @json($data_nationlity);
     
             document.addEventListener('DOMContentLoaded', function () {
                 var ctx = document.getElementById('myChart').getContext('2d');

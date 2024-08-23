@@ -18,8 +18,8 @@
         <div @click.away="open = false" class="flex flex-col w-full md:w-64 text-gray-700 bg-white dark-mode:text-gray-200 dark-mode:bg-gray-800 flex-shrink-0" x-data="{ open: false }">
             <div class="flex-shrink-0 px-8 py-4 mt-10 flex flex-row items-center justify-between">
                 <a href="#" class="text-lg font-semibold text-gray-900 rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">
-                    <img src="{{ asset('assets/logo-udinus.png') }}" alt="UDINUS Logo" class="h-10 w-10 mr-2">
-                    Garuda Scholarship
+                    <img src="{{ asset('assets/logo-udinus.png') }}" alt="UDINUS Logo" class="h-10 w-10 md:h-20 md:w-20 mr-2">
+                    <span class="text-lg font-semibold text-gray-900 rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline hidden md:flex">Garuda Scholarship</span>
                 </a>
                 <button class="rounded-lg md:hidden rounded-lg focus:outline-none focus:shadow-outline" @click="open = !open">
                     <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
@@ -73,7 +73,7 @@
         </div>
         <!-- Main Content -->
         <div class="flex flex-col w-full">
-            <nav class="bg-blue-900 mb-3 hidden lg:flex shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]">
+            <nav class="bg-[#003d7a] mb-3 hidden lg:flex shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]">
                 <div class="container mx-auto px-6 py-6">
                     <div class="flex items-center justify-between">
                         <div class="hidden md:block">

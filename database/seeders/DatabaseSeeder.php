@@ -5,7 +5,9 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Admin;
+use App\Models\Apply;
 use App\Models\Blog;
+use App\Models\Document;
 use App\Models\SecondStatus;
 use App\Models\status;
 use App\Models\User;
@@ -25,13 +27,13 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        status::create(['name' => 'Pending']);
-        status::create(['name' => 'Approved']);
-        status::create(['name' => 'Rejected']);
+        // status::create(['name' => 'Pending']);
+        // status::create(['name' => 'Approved']);
+        // status::create(['name' => 'Rejected']);
 
-        SecondStatus::create(['name' => 'Pending']);
-        SecondStatus::create(['name' => 'Approved']);
-        SecondStatus::create(['name' => 'Rejected']);
+        // SecondStatus::create(['name' => 'Pending']);
+        // SecondStatus::create(['name' => 'Approved']);
+        // SecondStatus::create(['name' => 'Rejected']);
 
         Admin::create([
             'email' => 'admin@gmail.com',
@@ -39,5 +41,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Blog::factory(20)->create();
+
+        User::factory(50)->create();
+        Document::factory()->count(50)->create();
+        Apply::factory()->count(50)->create();
     }
 }

@@ -31,7 +31,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::get('/table/user', [AdminController::class, 'dashboard'])->name('admin.table');
     Route::get('/table/user/{id}', [AdminController::class, 'showApplicant'])->name('admin.showApplicant');
     Route::get('/table/user/{id}/edit', [AdminController::class, 'showEditFrom'])->name('admin.showEditForm');
-    Route::put('/table/user/{id}/update', [AdminController::class, 'update'])->name('admin.updateDocument');
+    Route::put('/table/user/{id}/update', [AdminController::class, 'updateDocument'])->name('admin.updateDocument');
     Route::get('/table/export-data', [AdminController::class, 'exportApplicant'])->name('admin.exportApplicant');
     // Status
     Route::get('/table/user-status', [AdminController::class, 'status'])->name('admin.status');

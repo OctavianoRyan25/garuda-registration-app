@@ -98,6 +98,7 @@ class UserController extends Controller
         if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
 
+            Alert::toast('Login successful.', 'success');
             return redirect()->intended('/');
         }
 

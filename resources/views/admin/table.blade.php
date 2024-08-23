@@ -118,7 +118,7 @@
                             <td>
                                 <div class="items-center flex gap-2">
                                     <!-- Edit Button -->
-                                    <a href="/admin/{{ $applicant->document_id }}" class="inline-flex items-center p-3 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-md">
+                                    <a href="{{ route('admin.showEditForm', $applicant->id) }}" class="inline-flex items-center p-3 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-md">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-pen h-5 w-5" viewBox="0 0 16 16">
                                             <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
                                         </svg>
@@ -129,8 +129,13 @@
                                         @method('DELETE')
                                         @csrf
                                         <button type="button" onclick="confirmDelete(event)" class="flex items-center justify-center p-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 delete-button" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            {{-- Spinner --}}
+                                            <svg aria-hidden="true" id="spinner" role="status" class="hidden w-4 h-4 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
+                                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/>
                                             </svg>
                                         </button>
                                     </form>
@@ -174,6 +179,12 @@
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    const button = form.querySelector('button[type="button"]');
+                    const deleteButton = form.querySelector('.delete-button');
+                    const spinner = form.querySelector('#spinner');
+                    button.disabled = true; // Nonaktifkan tombol
+                    deleteButton.classList.add('hidden'); // Sembunyikan icon delete
+                    spinner.classList.remove('hidden'); // Tampilkan spinner
                     form.submit(); // Kirim form setelah konfirmasi
                 }
             });

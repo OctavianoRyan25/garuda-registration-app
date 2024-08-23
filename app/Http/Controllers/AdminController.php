@@ -20,6 +20,35 @@ use SebastianBergmann\CodeCoverage\Report\Html\Facade;
 
 class AdminController extends Controller
 {
+    private $countries = [
+        'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 
+        'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 
+        'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 
+        'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cabo Verde', 'Cambodia', 'Cameroon', 
+        'Canada', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo, Democratic Republic of the', 
+        'Congo, Republic of the', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 
+        'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 
+        'Eswatini', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 
+        'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 
+        'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 
+        'Kiribati', 'Korea, North', 'Korea, South', 'Kosovo', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 
+        'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Madagascar', 'Malawi', 'Malaysia', 
+        'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 
+        'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 
+        'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Macedonia', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestine', 
+        'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 
+        'Rwanda', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 
+        'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 
+        'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 
+        'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste', 'Togo', 'Tonga', 
+        'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 
+        'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 
+        'Yemen', 'Zambia', 'Zimbabwe'   
+    ];
+
+    private $departments = [
+        'Bachelor of Informatics', 'Bachelor of Information System', 'Bachelor of Visual Communication Design', 'Bachelor of Communication Science'
+    ];
     // Controller for Admin Authentication
 
     public function showAdminRegisterForm()
@@ -81,19 +110,32 @@ class AdminController extends Controller
     public function index()
     {
         // Show the number of users every each nationlity
-        $results = DB::table('documents')
+        $results_nationality = DB::table('documents')
             ->select('nationality as NATIONALITY', DB::raw('COUNT(nationality) as COUNTER'))
             ->groupBy('nationality')
             ->orderBy('nationality', 'asc')
             ->get();
         
         // Convert the results to an array for easier use in the view
-        $data = $results->map(function($item) {
+        $data_nationlity = $results_nationality->map(function($item) {
             return [
                 'NATIONALITY' => $item->NATIONALITY,
                 'COUNTER' => $item->COUNTER
             ];
         });
+
+        $results_department = DB::table('documents')
+            ->select('department as DEPARTMENT', DB::raw('COUNT(department) as COUNTER'))
+            ->groupBy('department')
+            ->orderBy('department', 'asc')
+            ->get();
+
+        // $data_department = $results_department->map(function($item) {
+        //     return [
+        //         'DEPARTMENT' => $item->DEPARTMENT,
+        //         'COUNTER' => $item->COUNTER
+        //     ];
+        // });
 
         $regionCount = Document::distinct('nationality')->count('region');
 
@@ -102,7 +144,8 @@ class AdminController extends Controller
         return view('admin.index',[
             'count_user_today' => Document::where('created_at', '>=', Carbon::today())->count(),
             'count_user' => Document::count(),
-            'data' => $data,
+            'data_nationlity' => $data_nationlity,
+            'data_department' => $results_department,
             'region_count' => $regionCount,
             'department_count' => $departmentCount
         ]);
@@ -161,6 +204,90 @@ class AdminController extends Controller
             'apply_data' => $applicant
         ]);
     }
+
+    public function showEditFrom(string $id)
+    {
+        $applicant = Apply::where('id', $id)->with('user', 'status', 'secondStatus', 'document')->first();
+        return view('admin.update_profile_user', [
+            'applicant' => $applicant,
+            'countries' => $this->countries,
+            'departments' => $this->departments
+        ]);
+    }
+
+    public function updateDocument(Request $request, string $id)
+    {
+        $applicant = Apply::where('id', $id)->with('user', 'status', 'secondStatus', 'document')->first();
+
+        if (!$applicant) {
+            return redirect()->route('admin.table')->with('error', 'Data not found');
+        }
+
+        $document = $applicant->document;
+
+        $request->validate([
+            'first_name' => 'required',
+            'family_name' => 'required',
+            'phone_number' => 'required',
+            'nationality' => 'required',
+            'passport_number' => 'required',
+            'department' => 'required',
+            'passport' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'research_proposal' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'study_plan' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'english_proficiency' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'transcript' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'medical_checkup' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'first_letter_of_recommendation' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'second_letter_of_recommendation' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $userData = [
+                'first_name' => $request->first_name,
+                'family_name' => $request->family_name,
+                'email' => $applicant->document->email,
+                'phone_number' => $request->phone_number,
+                'nationality' => $request->nationality,
+                'passport_number' => $request->passport_number,
+                'department' => $request->department,
+                'updated_at' => now()
+            ];
+    
+            $fileFields = [
+                'passport', 'research_proposal', 'study_plan',
+                'english_proficiency', 'transcript', 'cv',
+                'medical_checkup', 'first_letter_of_recommendation',
+                'second_letter_of_recommendation'
+            ];
+    
+            foreach ($fileFields as $field) {
+                if ($request->hasFile($field)) {
+                    if ($document->$field) {
+                        Storage::delete('public/' . $document->$field);
+                    }
+                    $path = $request->file($field)->store('public/' . $field);
+                    $userData[$field] = str_replace('public/', '', $path);
+                } else {
+                    $userData[$field] = $document->$field;
+                }
+            }
+    
+            $document->update($userData);
+    
+            DB::commit();
+            
+            FacadesAlert::toast('Documents edited successfully.', 'success');
+            return redirect()->route('admin.showApplicant', $id);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error($e);
+            return redirect()->route('admin.showApplicant', $id)->with('error', 'Failed to edit documents');
+        }
+    }
+
 
     /**
      * Show the form for editing the specified resource.

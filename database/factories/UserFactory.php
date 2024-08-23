@@ -25,7 +25,7 @@ class UserFactory extends Factory
     {
         return [
             'email' => $this->faker->unique()->safeEmail,
-            'password' => static::$password ?: static::$password = Hash::make('password'),
+            'password' => Hash::make('password'),
         ];
     }
 

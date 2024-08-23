@@ -41,7 +41,7 @@
                                             <div class="grid gap-2">
                                                 <div class="flex items-center justify-between">
                                                     <span>First Name:</span>
-                                                    <span class="text-xs md:font-medium">{{ $apply_data->document->first_name }}</span>
+                                                    <span class="text-xs md:text-base md:font-medium">{{ $apply_data->document->first_name }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
                                                     <span>Last Name:</span>
