@@ -33,12 +33,24 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::get('/table/user/{id}/edit', [AdminController::class, 'showEditFrom'])->name('admin.showEditForm');
     Route::put('/table/user/{id}/update', [AdminController::class, 'updateDocument'])->name('admin.updateDocument');
     Route::get('/table/export-data', [AdminController::class, 'exportApplicant'])->name('admin.exportApplicant');
+
+    // All Data
+    Route::get('/table/all-data', [AdminController::class, 'allData'])->name('admin.allData');
+    Route::get('/table/export-specific-data', [AdminController::class, 'exportSpecificAllData'])->name('admin.exportSpecificAllData');
+    Route::get('/table/export-all-data', [AdminController::class, 'exportAllData'])->name('admin.exportAllData');
+
+    // Archive
+    // Route::get('/table/archive', [AdminController::class, 'archive'])->name('admin.archive');
+    Route::post('table/archive', [AdminController::class, 'archiveYear'])->name('admin.archiveYear');
+
     // Status
     Route::get('/table/user-status', [AdminController::class, 'status'])->name('admin.status');
     Route::post('/table/user/{id}/approve', [AdminController::class, 'approve'])->name('admin.approve');
     Route::post('/table/user/{id}/reject', [AdminController::class, 'reject'])->name('admin.reject');
+    Route::post('table/user/{id}/cancel', [AdminController::class, 'cancel'])->name('admin.cancel');
     Route::post('/table/user/{id}/second-approve', [AdminController::class, 'approveSecond'])->name('admin.approveSecond');
     Route::post('/table/user/{id}/second-reject', [AdminController::class, 'rejectSecond'])->name('admin.rejectSecond');
+    Route::post('/table/user/{id}/second-cancel', [AdminController::class, 'cancelSecond'])->name('admin.cancelSecond');
     // Blog
     Route::get('/blog', [AdminController::class, 'blog'])->name('admin.blog');
     Route::get('/blog/{id}/preview', [AdminController::class, 'showBlog'])->name('admin.showBlog');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ApplyExport;
+use App\Exports\ApplywithFilterExport;
 use App\Models\Admin;
 use App\Models\Apply;
 use App\Models\Blog;
@@ -16,7 +17,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use RealRashid\SweetAlert\Facades\Alert as FacadesAlert;
-use SebastianBergmann\CodeCoverage\Report\Html\Facade;
 
 class AdminController extends Controller
 {
@@ -147,7 +147,7 @@ class AdminController extends Controller
             'data_nationlity' => $data_nationlity,
             'data_department' => $results_department,
             'region_count' => $regionCount,
-            'department_count' => $departmentCount
+            'department_count' => $departmentCount,
         ]);
     }
 
@@ -156,15 +156,28 @@ class AdminController extends Controller
         return Excel::download(new ApplyExport, 'applicants.xlsx');
     }
 
+    public function exportSpecificAllData(Request $request)
+    {
+        $request->validate([
+            'year' => 'required|numeric'
+        ]);
+        $year = $request->input('year');
+
+        return Excel::download(new ApplywithFilterExport($year), 'applicants_' . $year . '.xlsx');
+    }
+
     public function dashboard()
     {
         $title = 'Delete User!';
         $text = "Are you sure you want to delete?";
         confirmDelete($title, $text);
         $applicant = Apply::with('user', 'document')->get();
+
+        $year = Carbon::now()->year;
         return view('admin.table',
             [
-                'applicants' => $applicant
+                'applicants' => $applicant,
+                'year' => $year
             ]
         );
     }
@@ -232,15 +245,15 @@ class AdminController extends Controller
             'nationality' => 'required',
             'passport_number' => 'required',
             'department' => 'required',
-            'passport' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'research_proposal' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'study_plan' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'english_proficiency' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
-            'transcript' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
-            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'medical_checkup' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
-            'first_letter_of_recommendation' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'second_letter_of_recommendation' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'passport' => 'nullable|file|mimes:pdf|max:2048',
+            'research_proposal' => 'nullable|file|mimes:pdf|max:2048',
+            'study_plan' => 'nullable|file|mimes:pdf|max:2048',
+            'english_proficiency' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'transcript' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'cv' => 'nullable|file|mimes:pdf|max:2048',
+            'medical_checkup' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'first_letter_of_recommendation' => 'nullable|file|mimes:pdf|max:2048',
+            'second_letter_of_recommendation' => 'nullable|file|mimes:pdf|max:2048',
         ]);
 
         DB::beginTransaction();
@@ -306,11 +319,11 @@ class AdminController extends Controller
     }
 
     
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
         $apply = Apply::find($id);
         if (!$apply) {
-            return redirect()->route('admin.table')->with('error', 'Data not found');
+            return redirect()->back()->with('error', 'Data not found');
         }
 
         DB::beginTransaction();
@@ -321,10 +334,10 @@ class AdminController extends Controller
             DB::commit();
 
             FacadesAlert::toast('Data has been deleted', 'success');
-            return redirect()->route('admin.table');
+            return redirect()->back();
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('admin.table')->with('error', 'Failed to delete data');
+            return redirect()->back()->with('error', 'Failed to delete data');
         }
     }
 
@@ -332,7 +345,7 @@ class AdminController extends Controller
 
     public function status()
     {
-        $applicant = Apply::with('user', 'status', 'secondStatus', 'document')->get();
+        $applicant = Apply::where('is_archived', false)->with('user', 'status', 'secondStatus', 'document')->get();
         return view('admin.status',
             [
                 'applicants' => $applicant
@@ -356,6 +369,15 @@ class AdminController extends Controller
         $apply->second_status_id = 3;
         $apply->save();
         return redirect()->route('admin.status')->with('success', 'Application has been rejected');
+    }
+
+    public function cancel(string $id)
+    {
+        $apply = Apply::find($id);
+        $apply->status_id = 1;
+        $apply->second_status_id = 4;
+        $apply->save();
+        return redirect()->route('admin.status')->with('success', 'Application has been canceled');
     }
 
     public function approveSecond(string $id)
@@ -521,4 +543,91 @@ class AdminController extends Controller
             return redirect()->route('admin.blog')->with('error', 'Failed to delete blog');
         }
     }
+
+    public function allData(Request $request)
+    {
+        $title = 'Delete User!';
+        $text = "Are you sure you want to delete?";
+        confirmDelete($title, $text);
+
+        $applicant = Apply::query()
+                                ->with('user', 'document')
+                                ->leftJoin('documents', 'applies.document_id', '=', 'documents.id');
+
+        if($request->has('year') && $request->year != null) {
+            $applicant = $applicant->whereYear('applies.created_at', $request->year);
+        }
+
+        if($request->has('sort')){
+            switch ($request->sort) {
+                case 'first_name_asc':
+                    $applicant = $applicant->orderBy('documents.first_name', 'asc');
+                    break;
+                case 'first_name_desc':
+                    $applicant = $applicant->orderBy('documents.first_name', 'desc');
+                    break;
+                case 'family_name_asc':
+                    $applicant = $applicant->orderBy('documents.family_name', 'asc');
+                    break;
+                case 'family_name_desc':
+                    $applicant = $applicant->orderBy('documents.family_name', 'desc');
+                    break;
+                case 'nationality_asc':
+                    $applicant = $applicant->orderBy('documents.nationality', 'asc');
+                    break;
+                case 'nationality_desc':
+                    $applicant = $applicant->orderBy('documents.nationality', 'desc');
+                    break;
+                case 'department_asc':
+                    $applicant = $applicant->orderBy('documents.department', 'asc');
+                    break;
+                case 'department_desc':
+                    $applicant = $applicant->orderBy('documents.department', 'desc');
+                    break;
+            }
+        }
+
+        $applicantWithPage = $applicant->paginate(10)->withQueryString();
+        return view('admin.all_data', [
+            'applicants' => $applicantWithPage
+        ]);
+    }
+
+    public function exportAllData()
+    {
+        return Excel::download(new ApplyExport, 'all_applicants.xlsx');
+    }
+
+    public function archiveYear(Request $request)
+    {
+        $request->validate([
+            'year' => 'required|numeric'
+        ]);
+
+        $year = $request->year;
+
+        $applicant = Apply::whereYear('created_at', $year)->with('user', 'document')->get();
+
+        if ($applicant->isEmpty()) {
+            return redirect()->route('admin.allData')->with('error', 'Data not found');
+        }
+
+        DB::beginTransaction();
+
+        try {
+            foreach ($applicant as $data) {
+                $data['is_archived'] = 1;
+                $data->save();
+            }
+
+            DB::commit();
+
+            FacadesAlert::toast('Data has been archived', 'success');
+            return redirect()->route('admin.allData');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('admin.allData')->with('error', 'Failed to archive data');
+        }
+    }
+
 }

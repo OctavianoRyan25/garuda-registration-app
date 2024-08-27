@@ -6,7 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Login</title>
     <link rel="icon" href="{{ asset('assets/logo-udinus.png') }}" type="image/x-icon">
-    @vite(['resources/css/app.css','resources/js/app.js'])
+    <script type="module" src="{{ asset('build/assets/app-C1-XIpUa.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('build/assets/app-C6H2NvHB.css') }}">
 </head>
 <body>
     <section class="py-4 md:py-8 ">

@@ -27,13 +27,14 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        // status::create(['name' => 'Pending']);
-        // status::create(['name' => 'Approved']);
-        // status::create(['name' => 'Rejected']);
+        status::create(['name' => 'Processed']);
+        status::create(['name' => 'Accepted']);
+        status::create(['name' => 'Rejected']);
 
-        // SecondStatus::create(['name' => 'Pending']);
-        // SecondStatus::create(['name' => 'Approved']);
-        // SecondStatus::create(['name' => 'Rejected']);
+        SecondStatus::create(['name' => 'Processed']);
+        SecondStatus::create(['name' => 'Accepted']);
+        SecondStatus::create(['name' => 'Rejected']);
+        SecondStatus::create(['name' => 'Not Processed']);
 
         Admin::create([
             'email' => 'admin@gmail.com',

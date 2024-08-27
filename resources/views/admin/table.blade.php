@@ -72,7 +72,7 @@
         </nav>
         {{-- Table --}}
         <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
-            <div class="flex flex-col my-5 text-center text-2xl font-bold">Data Peserta</div>
+            <div class="flex flex-col my-5 text-center text-2xl font-bold">Data Peserta {{ $year }}</div>
             @if (session('success'))
                 <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-3" role="alert">
                     <p>{{ session('success') }}</p>

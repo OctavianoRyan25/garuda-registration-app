@@ -23,7 +23,7 @@
                     @else
                         <div class="w-full lg:w-full bg-white p-8 rounded-xl mx-3">
                             <h3 class="text-2xl font-bold text-center">Register</h3>
-                            <form action="{{ route('user.submitApplication') }}" method="POST" enctype="multipart/form-data" class="mt-8">
+                            <form id="app-form" action="{{ route('user.submitApplication') }}" method="POST" enctype="multipart/form-data" class="mt-8">
                                 @csrf
                                 <div class="flex flex-wrap mb-4">
                                     <div class="w-full px-3 xl:w-1/2">
@@ -89,6 +89,9 @@
                                             <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                         @enderror
                                     </div>
+                                </div>
+                                <div class="flex flex-wrap mb-4 px-3">
+                                    <p class="text-red-500">*<span class="text-xs text-gray-500 mt-2">Note : only PDF are Allowed.</span><p>
                                 </div>
                                 <div class="flex flex-wrap mb-4">
                                     <div class="w-full px-3 xl:w-1/3">
@@ -162,8 +165,10 @@
                                 </div>
                                 <div class="flex flex-wrap mb-4">
                                     <div class="w-full px-3">
-                                        <button type="submit" class="btn btn-md bg-yellow-500 rounded-md p-3 w-full mt-10 hover:bg-yellow-400 hover:ease-in-out transition">
-                                            <p class="text-white text-center font-bold">Register</p>
+                                        <button type="button" id="registerButton" onclick="submitButton(event)" class="btn btn-md bg-yellow-500 rounded-md p-3 w-full mt-10 hover:bg-yellow-400 hover:ease-in-out transition">
+                                            <div class="text-white text-center font-bold register-text">
+                                                Register
+                                            </div>
                                             {{-- Spinner --}}
                                             <svg aria-hidden="true" id="spinner" role="status" class="hidden w-4 h-4 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
@@ -179,4 +184,20 @@
             </div>
         </section>
         {{-- End Of Form --}}
+            <script>
+                function submitButton(e) {
+                    event.preventDefault(); 
+                    const form = event.target.closest('form'); 
+                    const spinner = form.querySelector('#spinner');
+                    const registerText = form.querySelector('.register-text'); 
+                    const registerButton = form.querySelector('#registerButton'); 
+
+                    spinner.classList.remove('hidden');
+                    spinner.classList.add('inline-block');
+                    registerText.classList.add('hidden');
+                    registerButton.classList.add('cursor-not-allowed', 'pointer-events-none', 'opacity-60');
+                    registerButton.disabled = true; 
+                    form.submit();
+                }
+            </script>
 @endsection
