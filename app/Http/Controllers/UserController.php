@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -115,7 +116,7 @@ class UserController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $apply = Apply::where('user_id', $user->id)->with('user', 'status', 'secondStatus', 'document')->first();
+        $apply = Apply::where('user_id', $user->id)->with('user', 'status', 'document')->first();
         // return dd($apply);
         return view('user.home', [
             'apply_data' => $apply
@@ -142,9 +143,12 @@ class UserController extends Controller
             'first_name' => 'required',
             'family_name' => 'required',
             'phone_number' => 'required',
+            'birth_date' => 'required',
+            'gender' => 'required|in:male,female',
             'nationality' => 'required',
             'passport_number' => 'required',
             'department' => 'required',
+            'profile_picture' => 'required|file|mimes:jpg,jpeg,png|dimensions:min_width=100,min_height=100,max_width=700,max_height=700|max:2048',
             'passport' => 'required|file|mimes:pdf|max:2048',
             'research_proposal' => 'required|file|mimes:pdf|max:2048',
             'study_plan' => 'required|file|mimes:pdf|max:2048',
@@ -164,13 +168,16 @@ class UserController extends Controller
                 'family_name' => $request->family_name,
                 'email' => Auth::user()->email,
                 'phone_number' => $request->phone_number,
+                'birth_date' => $request->birth_date,
+                'age' => now()->diffInYears($request->birth_date),
                 'nationality' => $request->nationality,
                 'passport_number' => $request->passport_number,
                 'department' => $request->department,
+                'gender' => $request->gender,
             ];
         
             $fileFields = [
-                'passport', 'research_proposal', 'study_plan',
+                'profile_picture', 'passport', 'research_proposal', 'study_plan',
                 'english_proficiency', 'transcript', 'cv',
                 'medical_checkup', 'first_letter_of_recommendation',
                 'second_letter_of_recommendation'
@@ -188,9 +195,9 @@ class UserController extends Controller
             $applyData = [
                 'user_id' => Auth::id(),
                 'status_id' => 1,
-                'second_status_id' => 4,
                 'document_id' => $success_add_documents->id,
-                'no_register' => 'PMB-'.rand(1000, 9999),
+                'no_register' => substr(date('Y'), -2) . rand(1000, 9999),
+                'is_archived' => false
             ];
             
             Apply::create($applyData);
@@ -201,8 +208,8 @@ class UserController extends Controller
             return redirect('/apply');
         } catch (\Throwable $th) {
             DB::rollBack();
-
-            return redirect('/apply');
+            Log::error('Error submitting application: ' . $th->getMessage());
+            return redirect('/apply')->with('error', 'Failed to submit application.');
         }
     }
 
@@ -240,9 +247,12 @@ class UserController extends Controller
             'first_name' => 'required',
             'family_name' => 'required',
             'phone_number' => 'required',
+            'birth_date' => 'required',
+            'gender' => 'required|in:male,female',
             'nationality' => 'required',
             'passport_number' => 'required',
             'department' => 'required',
+            'profile_picture' => 'nullable|file|mimes:jpg,jpeg,png|dimensions:min_width=100,min_height=100,max_width=700,max_height=700|max:2048',
             'passport' => 'nullable|file|mimes:pdf|max:2048',
             'research_proposal' => 'nullable|file|mimes:pdf|max:2048',
             'study_plan' => 'nullable|file|mimes:pdf|max:2048',
@@ -263,6 +273,8 @@ class UserController extends Controller
                 'family_name' => $request->family_name,
                 'email' => $user->email,
                 'phone_number' => $request->phone_number,
+                'birth_date' => $request->birth_date,
+                'age' => now()->diffInYears($request->birth_date),
                 'nationality' => $request->nationality,
                 'passport_number' => $request->passport_number,
                 'department' => $request->department,
@@ -270,7 +282,7 @@ class UserController extends Controller
             ];
 
             $fileFields = [
-                'passport', 'research_proposal', 'study_plan',
+                'profile_picture','passport', 'research_proposal', 'study_plan',
                 'english_proficiency', 'transcript', 'cv',
                 'medical_checkup', 'first_letter_of_recommendation',
                 'second_letter_of_recommendation'
@@ -297,6 +309,7 @@ class UserController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack();
+            Log::error('Error submitting application: ' . $th->getMessage());
             Alert::toast('Failed to update profile.', 'error');
             return redirect('/profile/edit');
         }

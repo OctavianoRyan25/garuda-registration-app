@@ -13,8 +13,8 @@ class Apply extends Model
         'user_id',
         'no_register',
         'status_id',
-        'second_status_id',
         'document_id',
+        'is_archived',
     ];
 
     public function user()
@@ -25,11 +25,6 @@ class Apply extends Model
     public function status()
     {
         return $this->belongsTo(Status::class);
-    }
-
-    public function secondStatus()
-    {
-        return $this->belongsTo(SecondStatus::class);
     }
 
     public function document()

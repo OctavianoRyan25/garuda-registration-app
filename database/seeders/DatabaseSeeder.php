@@ -27,14 +27,12 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        status::create(['name' => 'Processed']);
+        status::create(['name' => 'Uploaded']);
+        status::create(['name' => 'Received']);
+        status::create(['name' => 'Review in Progress']);
+        status::create(['name' => 'Continue to Interview Session']);
         status::create(['name' => 'Accepted']);
         status::create(['name' => 'Rejected']);
-
-        SecondStatus::create(['name' => 'Processed']);
-        SecondStatus::create(['name' => 'Accepted']);
-        SecondStatus::create(['name' => 'Rejected']);
-        SecondStatus::create(['name' => 'Not Processed']);
 
         Admin::create([
             'email' => 'admin@gmail.com',
@@ -43,8 +41,8 @@ class DatabaseSeeder extends Seeder
 
         Blog::factory(20)->create();
 
-        User::factory(50)->create();
-        Document::factory()->count(50)->create();
-        Apply::factory()->count(50)->create();
+        // User::factory(50)->create();
+        // Document::factory()->count(50)->create();
+        // Apply::factory()->count(50)->create();
     }
 }

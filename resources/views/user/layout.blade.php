@@ -75,7 +75,7 @@
         </div>
         <!-- Main Content -->
         <div class="flex flex-col w-full">
-            <nav class="bg-[#003d7a] mb-3 hidden lg:flex shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]">
+            <nav class="bg-[#003d7a] mb-3 hidden md:flex shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]">
                 <div class="container mx-auto px-6 py-6">
                     <div class="flex items-center justify-between">
                         <div class="hidden md:block">

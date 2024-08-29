@@ -40,43 +40,33 @@
                                         <div class="p-6">
                                             <div class="grid gap-2">
                                                 <div class="flex items-center justify-between">
-                                                    <span>First Name:</span>
-                                                    <span class="text-xs md:text-base md:font-medium">{{ $apply_data->document->first_name }}</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">First Name:</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">{{ $apply_data->document->first_name }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
-                                                    <span>Last Name:</span>
-                                                    <span class="text-xs md:text-base md:font-medium">{{ $apply_data->document->family_name }}</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">Last Name:</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">{{ $apply_data->document->family_name }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
-                                                    <span>Phone:</span>
-                                                    <span class="text-xs md:text-base md:font-medium">{{ $apply_data->document->phone_number }}</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">Phone:</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">{{ $apply_data->document->phone_number }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
-                                                    <span>Nationality:</span>
-                                                    <span class="text-xs md:text-base md:font-medium">{{ $apply_data->document->nationality }}</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">Nationality:</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">{{ $apply_data->document->nationality }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
-                                                    <span>Department:</span>
-                                                    <span class="text-xs md:text-base md:font-medium">{{ $apply_data->document->department }}</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">Department:</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">{{ $apply_data->document->department }}</span>
                                                 </div>
                                                 <div class="flex items-center justify-between">
-                                                    <span>Administration Selection:</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">Status</span>
                                                     @if($apply_data->status->name == 'Rejected')
                                                         <span class="font-medium text-red-500">{{ $apply_data->status->name }}</span>
                                                     @elseif($apply_data->status->name == 'Accepted')
                                                         <span class="rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ $apply_data->status->name }}</span>
                                                     @else
                                                     <span class="rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">{{ $apply_data->status->name }}</span>
-                                                    @endif
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <span>Status 2:</span>
-                                                    @if($apply_data->secondStatus->name == 'Rejected')
-                                                        <span class="font-medium text-red-500">{{ $apply_data->secondStatus->name }}</span>
-                                                    @elseif($apply_data->secondStatus->name == 'Accepted')
-                                                        <span class="rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ $apply_data->secondStatus->name }}</span>
-                                                    @else
-                                                    <span class="rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">{{ $apply_data->secondStatus->name }}</span>
                                                     @endif
                                                 </div>
                                             </div>

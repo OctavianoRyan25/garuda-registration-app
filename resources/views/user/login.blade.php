@@ -43,7 +43,7 @@
                     </div>
                     <div class="mt-4">
                         <label class="block text-gray-700">Password</label>
-                        <input type="password" name="password" id="" placeholder="Enter Password" minlength="6" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
+                        <input type="password" name="password" id="" placeholder="Enter Password" minlength="8" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
                         focus:bg-white focus:outline-none" required>
                         @error('password')
                             <div class="text-red-500">{{ $message }}</div>

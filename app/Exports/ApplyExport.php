@@ -19,7 +19,7 @@ class ApplyExport implements FromQuery, WithHeadings, WithMapping
 
     public function query()
     {
-        return Apply::with('status', 'secondStatus', 'document');
+        return Apply::with('status', 'document');
     }
 
     public function headings(): array
@@ -34,8 +34,7 @@ class ApplyExport implements FromQuery, WithHeadings, WithMapping
             'Nationality',
             'Passport Number',
             'Department',
-            'First Status',
-            'Second Status',
+            'Status',
             'Created At',
             'Updated At',
         ];
@@ -54,7 +53,6 @@ class ApplyExport implements FromQuery, WithHeadings, WithMapping
             $apply->document->passport_number,
             $apply->document->department,
             $apply->status->name,
-            $apply->secondStatus->name,
             $apply->created_at,
             $apply->updated_at,
         ];

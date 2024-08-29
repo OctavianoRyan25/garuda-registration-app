@@ -37,26 +37,17 @@
                                         <div class="inline-flex mt-3">
                                             <span class="bg-yellow-500 text-blue-900 font-semibold py-1 px-3 rounded-full text-xs me-3">{{ $apply_data->no_register }}</span>
                                             <div class="mx-3">
-                                                @if($apply_data->status->name == 'Rejected')
+                                                @if($apply_data->status->name == 5)
                                                     <span class="bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs">{{ $apply_data->status->name }}</span>
-                                                @elseif($apply_data->status->name == 'Accepted')
+                                                @elseif($apply_data->status->name == 4)
                                                     <span class="bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs">{{ $apply_data->status->name }}</span>
                                                 @else
                                                     <span class="bg-yellow-200 text-yellow-600 py-1 px-3 rounded-full text-xs">{{ $apply_data->status->name }}</span>
                                                 @endif
                                             </div>
-                                            <div class="mx-3">
-                                                @if($apply_data->secondStatus->name == 'Rejected')
-                                                    <span class="bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs">{{ $apply_data->secondStatus->name }}</span>
-                                                @elseif($apply_data->secondStatus->name == 'Accepted')
-                                                    <span class="bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs">{{ $apply_data->secondStatus->name }}</span>
-                                                @else
-                                                    <span class="bg-yellow-200 text-yellow-600 py-1 px-3 rounded-full text-xs">{{ $apply_data->secondStatus->name }}</span>
-                                                @endif
-                                            </div>
                                         </div>
-                                        <div class="">
-                                            <img src="{{ asset('assets/student.jpg') }}" alt="" srcset="">
+                                        <div class="me-3 mt-3">
+                                            <img src="{{ asset('storage/' . $apply_data->document->profile_picture) }}" alt="" srcset="" class="rounded" class="">
                                         </div>
                                     </div>
                                     <div class="lg:col-span-2">
@@ -71,9 +62,25 @@
                                                 <input type="text" name="last_name" id="last_name" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="{{ $apply_data->document->family_name }}" disabled/>
                                             </div>
                         
-                                            <div class="md:col-span-6">
+                                            <div class="md:col-span-2">
                                                 <label for="email">Email Address</label>
                                                 <input type="text" name="email" id="email" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="{{ $apply_data->document->email }}" placeholder="email@domain.com" disabled/>
+                                            </div>
+
+                                            
+                                            <div class="md:col-span-2">
+                                                <label for="birth_date">Birth Date</label>
+                                                <input type="text" name="birth_date" id="birth_date" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="{{ $apply_data->document->birth_date }}" placeholder="12-12-2021" disabled/>
+                                            </div>
+
+                                            <div class="md:col-span-1">
+                                                <label for="age">Age</label>
+                                                <input type="text" name="age" id="age" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="{{ $apply_data->document->age }}" placeholder="email@domain.com" disabled/>
+                                            </div>
+
+                                            <div class="md:col-span-1">
+                                                <label for="gender">Gender</label>
+                                                <input type="text" name="gender" id="gender" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="{{ $apply_data->document->gender }}" placeholder="email@domain.com" disabled/>
                                             </div>
                         
                                             <div class="md:col-span-3">

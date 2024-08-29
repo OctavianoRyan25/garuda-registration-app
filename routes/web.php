@@ -3,6 +3,7 @@
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +16,12 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+// Call symbolic link storage
+Route::get('/97CEE0E580515EEFC92470A8DCD1C071A1464756E28E8B940EC8B86ECDEB12F1/storage-link', function () {
+    Artisan::call('storage:link');
+    return 'Storage link created';
+});
 
 //Admin Routes
 // Auth Admin Routes
@@ -45,12 +52,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
 
     // Status
     Route::get('/table/user-status', [AdminController::class, 'status'])->name('admin.status');
-    Route::post('/table/user/{id}/approve', [AdminController::class, 'approve'])->name('admin.approve');
-    Route::post('/table/user/{id}/reject', [AdminController::class, 'reject'])->name('admin.reject');
-    Route::post('table/user/{id}/cancel', [AdminController::class, 'cancel'])->name('admin.cancel');
-    Route::post('/table/user/{id}/second-approve', [AdminController::class, 'approveSecond'])->name('admin.approveSecond');
-    Route::post('/table/user/{id}/second-reject', [AdminController::class, 'rejectSecond'])->name('admin.rejectSecond');
-    Route::post('/table/user/{id}/second-cancel', [AdminController::class, 'cancelSecond'])->name('admin.cancelSecond');
+    Route::post('/table/user/{id}/update-status', [AdminController::class, 'updateStatus'])->name('admin.updateStatus');
     // Blog
     Route::get('/blog', [AdminController::class, 'blog'])->name('admin.blog');
     Route::get('/blog/{id}/preview', [AdminController::class, 'showBlog'])->name('admin.showBlog');
@@ -59,6 +61,9 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::get('/blog/{id}/edit', [AdminController::class, 'showEditBlogForm'])->name('admin.editBlog');
     Route::put('/blog/{id}/update', [AdminController::class, 'updateBlog'])->name('admin.updateBlog');
     Route::delete('/blog/{id}/delete', [AdminController::class, 'deleteBlog'])->name('admin.deleteBlog');
+    //User
+    Route::get('/user', [AdminController::class, 'showAllUser'])->name('admin.user');
+    Route::post('/user/{id}/update-password', [AdminController::class, 'updatePassword'])->name('admin.updatePassword');
 });
 
 

@@ -17,9 +17,13 @@ return new class extends Migration
             $table->string('family_name');
             $table->string('email')->unique();
             $table->string('phone_number');
+            $table->string('birth_date');
+            $table->integer('age');
+            $table->string('gender');
             $table->string('nationality');
             $table->string('passport_number');
             $table->string('department');
+            $table->string('profile_picture');
             $table->string('passport');
             $table->string('research_proposal');
             $table->string('study_plan');

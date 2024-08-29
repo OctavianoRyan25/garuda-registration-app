@@ -8,10 +8,12 @@ use App\Models\Admin;
 use App\Models\Apply;
 use App\Models\Blog;
 use App\Models\Document;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -212,15 +214,15 @@ class AdminController extends Controller
 
     public function showApplicant(string $id)
     {
-        $applicant = Apply::where('id', $id)->with('user', 'status', 'document')->first();
+        $apply = Apply::where('id', $id)->with('user', 'status', 'document')->first();
         return view('admin.show', [
-            'apply_data' => $applicant
+            'apply_data' => $apply
         ]);
     }
 
     public function showEditFrom(string $id)
     {
-        $applicant = Apply::where('id', $id)->with('user', 'status', 'secondStatus', 'document')->first();
+        $applicant = Apply::where('id', $id)->with('user', 'status', 'document')->first();
         return view('admin.update_profile_user', [
             'applicant' => $applicant,
             'countries' => $this->countries,
@@ -230,7 +232,7 @@ class AdminController extends Controller
 
     public function updateDocument(Request $request, string $id)
     {
-        $applicant = Apply::where('id', $id)->with('user', 'status', 'secondStatus', 'document')->first();
+        $applicant = Apply::where('id', $id)->with('user', 'status', 'document')->first();
 
         if (!$applicant) {
             return redirect()->route('admin.table')->with('error', 'Data not found');
@@ -345,64 +347,73 @@ class AdminController extends Controller
 
     public function status()
     {
-        $applicant = Apply::where('is_archived', false)->with('user', 'status', 'secondStatus', 'document')->get();
+        $applicant = Apply::where('is_archived', false)->with('user', 'status', 'document')->get();
+        $status = DB::table('statuses')->get();
         return view('admin.status',
             [
-                'applicants' => $applicant
+                'applicants' => $applicant,
+                'statuses' => $status
             ]
         );
     }
 
-    public function approve(string $id)
+    public function updateStatus(string $id, Request $request)
     {
-        $apply = Apply::find($id);
-        $apply->status_id = 2;
-        $apply->second_status_id = 1;
-        $apply->save();
-        return redirect()->route('admin.status')->with('success', 'Application has been approved');
-    }
+        $request->validate([
+            'status' => 'required|numeric'
+        ]);
 
-    public function reject(string $id)
-    {
         $apply = Apply::find($id);
-        $apply->status_id = 3;
-        $apply->second_status_id = 3;
-        $apply->save();
-        return redirect()->route('admin.status')->with('success', 'Application has been rejected');
-    }
-
-    public function cancel(string $id)
-    {
-        $apply = Apply::find($id);
-        $apply->status_id = 1;
-        $apply->second_status_id = 4;
-        $apply->save();
-        return redirect()->route('admin.status')->with('success', 'Application has been canceled');
-    }
-
-    public function approveSecond(string $id)
-    {
-        $apply = Apply::find($id);
-        // Check if the first status has been approved
-        if ($apply->status_id != 2) {
-            return redirect()->route('admin.status')->with('error', 'Please approve the first status first');
+        if (!$apply) {
+            return redirect()->route('admin.status')->with('error', 'Data not found');
         }
-        $apply->second_status_id = 2;
+        $apply->status_id = $request->status;
         $apply->save();
-        return redirect()->route('admin.status')->with('success', 'Application has been approved');
+
+        return redirect()->route('admin.status')->with('success', 'Status updated successfully');
     }
 
-    public function rejectSecond(string $id)
-    {
-        $apply = Apply::find($id);
-        // Check if the first status has been approved
-        if ($apply->status_id != 2) {
-            return redirect()->route('admin.status')->with('error', 'Please approve the first status first');
-        }
-        $apply->second_status_id = 3;
-        $apply->save();
-        return redirect()->route('admin.status')->with('success', 'Application has been rejected');
-    }
+    // public function reject(string $id)
+    // {
+    //     $apply = Apply::find($id);
+    //     $apply->status_id = 3;
+    //     $apply->second_status_id = 3;
+    //     $apply->save();
+    //     return redirect()->route('admin.status')->with('success', 'Application has been rejected');
+    // }
+
+    // public function cancel(string $id)
+    // {
+    //     $apply = Apply::find($id);
+    //     $apply->status_id = 1;
+    //     $apply->second_status_id = 4;
+    //     $apply->save();
+    //     return redirect()->route('admin.status')->with('success', 'Application has been canceled');
+    // }
+
+    // public function approveSecond(string $id)
+    // {
+    //     $apply = Apply::find($id);
+    //     // Check if the first status has been approved
+    //     if ($apply->status_id != 2) {
+    //         return redirect()->route('admin.status')->with('error', 'Please approve the first status first');
+    //     }
+    //     $apply->second_status_id = 2;
+    //     $apply->save();
+    //     return redirect()->route('admin.status')->with('success', 'Application has been approved');
+    // }
+
+    // public function rejectSecond(string $id)
+    // {
+    //     $apply = Apply::find($id);
+    //     // Check if the first status has been approved
+    //     if ($apply->status_id != 2) {
+    //         return redirect()->route('admin.status')->with('error', 'Please approve the first status first');
+    //     }
+    //     $apply->second_status_id = 3;
+    //     $apply->save();
+    //     return redirect()->route('admin.status')->with('success', 'Application has been rejected');
+    // }
 
     // Controller for manage blog
     public function blog()
@@ -552,7 +563,10 @@ class AdminController extends Controller
 
         $applicant = Apply::query()
                                 ->with('user', 'document')
-                                ->leftJoin('documents', 'applies.document_id', '=', 'documents.id');
+                                ->leftJoin('documents', 'applies.document_id', '=', 'documents.id')
+                                ->select('applies.id as apply_id','applies.*', 'documents.*');
+
+        // dd($applicant);
 
         if($request->has('year') && $request->year != null) {
             $applicant = $applicant->whereYear('applies.created_at', $request->year);
@@ -628,6 +642,36 @@ class AdminController extends Controller
             DB::rollBack();
             return redirect()->route('admin.allData')->with('error', 'Failed to archive data');
         }
+    }
+
+    public function showAllUser()
+    {
+        $title = 'Delete User!';
+        $text = "Are you sure you want to delete?";
+        confirmDelete($title, $text);
+        $users = User::with('apply.document')->get();
+        return view('admin.all_user', [
+            'users' => $users
+        ]);
+    }
+
+    public function updatePassword(string $id, Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed'
+        ]);
+
+        $user = User::find($id);
+        if (!$user) {
+            FacadesAlert::toast('User not found', 'error');
+            return redirect()->route('admin.all_user');
+        }
+
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        FacadesAlert::toast('Password updated successfully', 'success');
+        return redirect()->route('admin.all_user');
     }
 
 }

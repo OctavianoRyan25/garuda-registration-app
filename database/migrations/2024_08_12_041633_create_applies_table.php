@@ -16,8 +16,7 @@ return new class extends Migration
             $table->integer('user_id');
             $table->string('no_register');
             $table->integer('status_id');
-            $table->integer('second_status_id');
-            $table->string('document_id');
+            $table->integer('document_id');
             $table->boolean('is_archived')->default(false);
             $table->timestamps();
         });

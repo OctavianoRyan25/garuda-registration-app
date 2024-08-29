@@ -3,6 +3,8 @@
 @extends('user.layout')
 
 @section('content')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@24.3.4/build/css/intlTelInput.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css">
         {{-- Form --}}
         <section class="bg-gray-100 py-3 md:py-3">
             <div class="container">
@@ -23,7 +25,7 @@
                                 <span class="block sm:inline">{{ session('error') }}</span>
                             </div>
                         @endif
-                        <form action="{{ route('user.updateProfile') }}" method="POST" enctype="multipart/form-data" class="mt-8">
+                        <form action="{{ route('user.updateProfile') }}" method="POST" enctype="multipart/form-data" class="mt-8" id="form-update">
                             @csrf
                             @method('PUT')
                             <div class="flex flex-wrap mb-4">
@@ -50,16 +52,24 @@
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="w-full px-3 xl:w-1/2">
-                                    <label for="phone_number" class="text-sm font-bold text-gray-600">Phone or Whatsapp Number</label>
-                                    <input type="text" name="phone_number" id="phone_number" class="border border-gray-300 p-2 rounded-md mt-1 w-full" value="{{ $document->phone_number }}">
+                                <div class="w-full px-3 xl:w-1/4 flex flex-col mt-1">
+                                    <label for="phone_number" class="text-sm font-bold text-gray-600 mb-1">Phone or Whatsapp Number<span class="text-red-500">*</span></label>
+                                    <input type="tel" id="phone" name="phone_number" value="{{ $document->phone_number }}" class="border border-gray-300 p-2 rounded-md mt-1 w-full">
                                     @error('phone_number')
+                                        <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="w-full px-3 xl:w-1/4 flex flex-col mt-1">
+                                    {{-- Datepicker --}}
+                                    <label for="date_of_birth" class="text-sm font-bold text-gray-600">Date of Birth<span class="text-red-500">*</span></label>
+                                    <input type="text" name="birth_date" id="birth_date" value="{{ $document->birth_date }}" class="border border-gray-300 p-2 rounded-md mt-1 w-full" data-toggle="datepicker">
+                                    @error('birth_date')
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
                             <div class="flex flex-wrap mb-4">
-                                <div class="w-full px-3 xl:w-1/3">
+                                <div class="w-full px-3 xl:w-1/4">
                                     <label for="nationality" class="text-sm font-bold text-gray-600">Nationality</label>
                                     <select name="nationality" id="nationality" class="border border-gray-300 p-2 rounded-md mt-1 w-full">
                                         <option value="" disabled>Choose Your Country</option>
@@ -72,14 +82,14 @@
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="w-full px-3 xl:w-1/3">
+                                <div class="w-full px-3 xl:w-1/4">
                                     <label for="passport_number" class="text-sm font-bold text-gray-600">Passport Number</label>
                                     <input type="text" name="passport_number" id="passport_number" class="border border-gray-300 p-2 rounded-md mt-1 w-full" value="{{ $document->passport_number }}">
                                     @error('passport_number')
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="w-full px-3 xl:w-1/3">
+                                <div class="w-full px-3 xl:w-1/4">
                                     <label for="department" class="text-sm font-bold text-gray-600">Preferable Department</label>
                                     <select name="department" id="department" class="border border-gray-300 p-2 rounded-md mt-1 w-full">
                                         <option value="" disabled>Choose Your Department</option>
@@ -89,6 +99,32 @@
                                         @endforeach
                                     </select>
                                     @error('department')
+                                        <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="w-full px-3 xl:w-1/4">
+                                    <label for="gender" class="text-sm font-bold text-gray-600">Gender<span class="text-red-500">*</span></label>
+                                    <select name="gender" id="gender" class="border border-gray-300 p-2 rounded-md mt-1 w-full">
+                                        <option value="" disabled>Choose Your Gender</option>
+                                        @if($document->gender == "male")
+                                            <option value="male" selected>Male</option>
+                                            <option value="female">Female</option>
+                                        @else
+                                            <option value="male">Male</option>
+                                            <option value="female" selected>Female</option>
+                                        @endif
+                                    </select>
+                                    @error('gender')
+                                        <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap mb-4">
+                                <div class="w-full px-3 xl:w-1/3">
+                                    <label for="profile_picture" class="text-sm font-bold text-gray-600">Profile Picture</span></label>
+                                    <input id="profile_picture" type="file" name="profile_picture" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
+                                    {{-- <p class="text-xs text-gray-400 mt-2">*Only PDF allowed.</p> --}}
+                                    @error('profile_picture')
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -180,7 +216,28 @@
                 </div>
             </div>
         </section>
-        {{-- End Of Form --}}
+        <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@24.3.4/build/js/intlTelInput.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const input = document.querySelector("#phone");
+                const iti = window.intlTelInput(input, {
+                    strictMode: true,
+                    // separateDialCode: true,
+                    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@24.3.4/build/js/utils.js",
+                });
+
+                console.log(iti.getNumber());
+                console.log(iti);
+                
+                const elem = document.querySelector('input[name="birth_date"]');
+                const datepicker = new Datepicker(elem, {
+                    autohide: true,
+                    buttonClass: 'btn',
+                    format: 'dd-mm-yyyy',
+                });
+            });
+        </script>
         <script>
             function submitForm(e){
                 event.preventDefault(); 
