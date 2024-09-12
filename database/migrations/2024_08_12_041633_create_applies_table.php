@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('no_register');
             $table->integer('status_id');
             $table->integer('document_id');
+            $table->string('comment')->nullable()->default(null);
             $table->boolean('is_archived')->default(false);
             $table->timestamps();
         });

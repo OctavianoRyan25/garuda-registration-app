@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -50,6 +51,7 @@ class AdminController extends Controller
 
     private $departments = [
         'Bachelor of Informatics', 'Bachelor of Information System', 'Bachelor of Visual Communication Design', 'Bachelor of Communication Science'
+        , 'Master of Informatics', 'Master of Information System', 'Master of Visual Communication Design', 'Master of Communication Science'
     ];
     // Controller for Admin Authentication
 
@@ -94,7 +96,7 @@ class AdminController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::guard('admin')->attempt($credentials)) {
-            FacadesAlert::success('Success', 'Login successful');
+            FacadesAlert::toast('Login successful', 'success');
             return redirect()->route('admin.index');
         }
 
@@ -244,9 +246,12 @@ class AdminController extends Controller
             'first_name' => 'required',
             'family_name' => 'required',
             'phone_number' => 'required',
+            'birth_date' => 'required',
+            'gender' => 'required|in:male,female',
             'nationality' => 'required',
             'passport_number' => 'required',
             'department' => 'required',
+            'profile_picture' => 'nullable|file|mimes:jpg,jpeg,png|dimensions:min_width=100,min_height=100,max_width=700,max_height=700|max:2048',
             'passport' => 'nullable|file|mimes:pdf|max:2048',
             'research_proposal' => 'nullable|file|mimes:pdf|max:2048',
             'study_plan' => 'nullable|file|mimes:pdf|max:2048',
@@ -265,6 +270,8 @@ class AdminController extends Controller
                 'family_name' => $request->family_name,
                 'email' => $applicant->document->email,
                 'phone_number' => $request->phone_number,
+                'birth_date' => $request->birth_date,
+                'age' => now()->diffInYears($request->birth_date),
                 'nationality' => $request->nationality,
                 'passport_number' => $request->passport_number,
                 'department' => $request->department,
@@ -272,7 +279,7 @@ class AdminController extends Controller
             ];
     
             $fileFields = [
-                'passport', 'research_proposal', 'study_plan',
+                'profile_picture', 'passport', 'research_proposal', 'study_plan',
                 'english_proficiency', 'transcript', 'cv',
                 'medical_checkup', 'first_letter_of_recommendation',
                 'second_letter_of_recommendation'
@@ -373,47 +380,28 @@ class AdminController extends Controller
         return redirect()->route('admin.status')->with('success', 'Status updated successfully');
     }
 
-    // public function reject(string $id)
-    // {
-    //     $apply = Apply::find($id);
-    //     $apply->status_id = 3;
-    //     $apply->second_status_id = 3;
-    //     $apply->save();
-    //     return redirect()->route('admin.status')->with('success', 'Application has been rejected');
-    // }
+    public function updateComment(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'comment' => 'required|string'
+        ]);
 
-    // public function cancel(string $id)
-    // {
-    //     $apply = Apply::find($id);
-    //     $apply->status_id = 1;
-    //     $apply->second_status_id = 4;
-    //     $apply->save();
-    //     return redirect()->route('admin.status')->with('success', 'Application has been canceled');
-    // }
+        $apply = Apply::find($request->id);
+        if (!$apply) {
+            FacadesAlert::toast('Data not found', 'error');
+            return redirect()->route('admin.status');
+        }
+        $apply->comment = $request->comment;
+        $apply->updated_at = now();
+        $apply->update();
 
-    // public function approveSecond(string $id)
-    // {
-    //     $apply = Apply::find($id);
-    //     // Check if the first status has been approved
-    //     if ($apply->status_id != 2) {
-    //         return redirect()->route('admin.status')->with('error', 'Please approve the first status first');
-    //     }
-    //     $apply->second_status_id = 2;
-    //     $apply->save();
-    //     return redirect()->route('admin.status')->with('success', 'Application has been approved');
-    // }
-
-    // public function rejectSecond(string $id)
-    // {
-    //     $apply = Apply::find($id);
-    //     // Check if the first status has been approved
-    //     if ($apply->status_id != 2) {
-    //         return redirect()->route('admin.status')->with('error', 'Please approve the first status first');
-    //     }
-    //     $apply->second_status_id = 3;
-    //     $apply->save();
-    //     return redirect()->route('admin.status')->with('success', 'Application has been rejected');
-    // }
+        FacadesAlert::toast('Comment updated successfully', 'success');
+        // return redirect()->route('admin.table');
+        return response()->json([
+            'message' => 'Comment updated successfully',
+        ]);
+    }
 
     // Controller for manage blog
     public function blog()
@@ -644,12 +632,28 @@ class AdminController extends Controller
         }
     }
 
-    public function showAllUser()
+    public function showAllUser(Request $request)
     {
         $title = 'Delete User!';
         $text = "Are you sure you want to delete?";
         confirmDelete($title, $text);
-        $users = User::with('apply.document')->get();
+
+            if ($request->has('name')) {
+                $name = $request->name;
+                $users = User::whereHas('apply.document', function ($query) use ($name) {
+                    $query->where('first_name', 'like', '%' . $name . '%')
+                            ->orWhere('family_name', 'like', '%' . $name . '%')
+                            ->orWhere('email', 'like', '%' . $name . '%');
+                        })
+                        ->with('apply.document')
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(30);
+                return view('admin.all_user', [
+                    'users' => $users
+                ]);
+            }
+
+        $users = User::with('apply.document')->paginate(30);
         return view('admin.all_user', [
             'users' => $users
         ]);
@@ -661,17 +665,62 @@ class AdminController extends Controller
             'password' => 'required|string|min:8|confirmed'
         ]);
 
-        $user = User::find($id);
+        $user_id = $request->user_id;
+
+        $user = User::find($user_id);
         if (!$user) {
             FacadesAlert::toast('User not found', 'error');
             return redirect()->route('admin.all_user');
         }
 
-        $user->password = bcrypt($request->password);
-        $user->save();
+        $user->password = Hash::make($request->password);
+        $user->updated_at = now();
+        $success = $user->save();
 
+        if (!$success) {
+            FacadesAlert::toast('Failed to update password', 'error');
+            return redirect()->route('admin.user');
+        }
         FacadesAlert::toast('Password updated successfully', 'success');
-        return redirect()->route('admin.all_user');
+        return redirect()->route('admin.user');
+    }
+
+    public function searchUser(Request $request)
+    {
+        $search = $request->search;
+        $users = User::where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%')
+                        ->with('apply.document')
+                        ->paginate(30);
+        return view('admin.all_user', [
+            'users' => $users
+        ]);
+    }
+
+    public function deleteUser(string $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return redirect()->route('admin.all_user')->with('error', 'User not found');
+        }
+
+        $apply = Apply::where('user_id', $id)->first();
+
+        DB::beginTransaction();
+        try {
+            if ($apply) {
+                $apply->document->delete();
+                $apply->delete();
+            }
+            $user->delete();
+            DB::commit();
+            FacadesAlert::toast('User deleted successfully', 'success');
+            return redirect()->route('admin.user');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error($e);
+            return redirect()->route('admin.user')->with('error', 'Failed to delete user');
+        }
     }
 
 }

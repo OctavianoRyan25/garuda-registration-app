@@ -3,6 +3,8 @@
 @extends('admin.layout')
 
 @section('content')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@24.3.4/build/css/intlTelInput.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css">
         {{-- Form --}}
         <section class="bg-gray-100 py-3 md:py-3">
             <div class="container">
@@ -50,16 +52,23 @@
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="w-full px-3 xl:w-1/2">
+                                <div class="w-full px-3 xl:w-1/4 flex flex-col mt-1">
                                     <label for="phone_number" class="text-sm font-bold text-gray-600">Phone or Whatsapp Number</label>
-                                    <input type="text" name="phone_number" id="phone_number" class="border border-gray-300 p-2 rounded-md mt-1 w-full" value="{{ $applicant->document->phone_number }}">
+                                    <input type="tel" name="phone_number" id="phone" class="border border-gray-300 p-2 rounded-md mt-1 w-full" value="{{ $applicant->document->phone_number }}">
                                     @error('phone_number')
+                                        <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="w-full px-3 xl:w-1/4 flex flex-col mt-1">
+                                    <label for="date_of_birth" class="text-sm font-bold text-gray-600">Date of Birth<span class="text-red-500">*</span></label>
+                                    <input type="text" name="birth_date" id="birth_date" value="{{ $applicant->document->birth_date }}" class="border border-gray-300 p-2 rounded-md mt-1 w-full" data-toggle="datepicker">
+                                    @error('birth_date')
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
                             <div class="flex flex-wrap mb-4">
-                                <div class="w-full px-3 xl:w-1/3">
+                                <div class="w-full px-3 xl:w-1/4">
                                     <label for="nationality" class="text-sm font-bold text-gray-600">Nationality</label>
                                     <select name="nationality" id="nationality" class="border border-gray-300 p-2 rounded-md mt-1 w-full">
                                         <option value="" disabled>Choose Your Country</option>
@@ -72,14 +81,14 @@
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="w-full px-3 xl:w-1/3">
+                                <div class="w-full px-3 xl:w-1/4">
                                     <label for="passport_number" class="text-sm font-bold text-gray-600">Passport Number</label>
                                     <input type="text" name="passport_number" id="passport_number" class="border border-gray-300 p-2 rounded-md mt-1 w-full" value="{{ $applicant->document->passport_number }}">
                                     @error('passport_number')
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="w-full px-3 xl:w-1/3">
+                                <div class="w-full px-3 xl:w-1/4">
                                     <label for="department" class="text-sm font-bold text-gray-600">Preferable Department</label>
                                     <select name="department" id="department" class="border border-gray-300 p-2 rounded-md mt-1 w-full">
                                         <option value="" disabled>Choose Your Department</option>
@@ -89,6 +98,32 @@
                                         @endforeach
                                     </select>
                                     @error('department')
+                                        <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="w-full px-3 xl:w-1/4">
+                                    <label for="gender" class="text-sm font-bold text-gray-600">Gender<span class="text-red-500">*</span></label>
+                                    <select name="gender" id="gender" class="border border-gray-300 p-2 rounded-md mt-1 w-full">
+                                        <option value="" disabled>Choose Your Gender</option>
+                                        @if($applicant->document->gender == "male")
+                                            <option value="male" selected>Male</option>
+                                            <option value="female">Female</option>
+                                        @else
+                                            <option value="male">Male</option>
+                                            <option value="female" selected>Female</option>
+                                        @endif
+                                    </select>
+                                    @error('gender')
+                                        <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap mb-4">
+                                <div class="w-full px-3 xl:w-1/3">
+                                    <label for="profile_picture" class="text-sm font-bold text-gray-600">Profile Picture</span></label>
+                                    <input id="profile_picture" type="file" name="profile_picture" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
+                                    {{-- <p class="text-xs text-gray-400 mt-2">*Only PDF allowed.</p> --}}
+                                    @error('profile_picture')
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -102,9 +137,9 @@
                                     @enderror
                                 </div>
                                 <div class="w-full px-3 xl:w-1/3">
-                                    <label for="research_proposal" class="text-sm font-bold text-gray-600">Research Proposal</label>
-                                    <input id="research_proposal" type="file" name="research_proposal" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
-                                    @error('research_proposal')
+                                    <label for="cv" class="text-sm font-bold text-gray-600">Curriculum Vitae</label>
+                                    <input id="cv" type="file" name="cv" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
+                                    @error('cv')
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -132,21 +167,14 @@
                                     @enderror
                                 </div>
                                 <div class="w-full px-3 xl:w-1/3">
-                                    <label for="cv" class="text-sm font-bold text-gray-600">Curriculum Vitae</label>
-                                    <input id="cv" type="file" name="cv" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
-                                    @error('cv')
-                                        <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap mb-4">
-                                <div class="w-full px-3 xl:w-1/3">
                                     <label for="medical_checkup" class="text-sm font-bold text-gray-600">Medical Checkup</label>
                                     <input id="medical_checkup" type="file" name="medical_checkup" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
                                     @error('medical_checkup')
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
+                            </div>
+                            <div class="flex flex-wrap mb-4">
                                 <div class="w-full px-3 xl:w-1/3">
                                     <label for="first_letter_of_recommendation" class="text-sm font-bold text-gray-600">First Letter Recommendation</label>
                                     <input id="first_letter_of_recommendation" type="file" name="first_letter_of_recommendation" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
@@ -158,6 +186,13 @@
                                     <label for="second_letter_of_recommendation" class="text-sm font-bold text-gray-600">Second Letter Recommendation</label>
                                     <input id="second_letter_of_recommendation" type="file" name="second_letter_of_recommendation" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
                                     @error('second_letter_of_recommendation')
+                                        <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="w-full px-3 xl:w-1/3" id="block_research_proposal">
+                                    <label for="research_proposal" class="text-sm font-bold text-gray-600">Research Proposal</label>
+                                    <input id="research_proposal" type="file" name="research_proposal" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
+                                    @error('research_proposal')
                                         <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -174,5 +209,81 @@
                 </div>
             </div>
         </section>
-        {{-- End Of Form --}}
+        <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@24.3.4/build/js/intlTelInput.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const input = document.querySelector("#phone");
+                const iti = window.intlTelInput(input, {
+                    strictMode: true,
+                    // separateDialCode: true,
+                    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@24.3.4/build/js/utils.js",
+                });
+
+                const elem = document.querySelector('input[name="birth_date"]');
+                const datepicker = new Datepicker(elem, {
+                    autohide: true,
+                    buttonClass: 'btn',
+                    format: 'dd-mm-yyyy',
+                });
+
+                const departmentSelect = document.querySelector('#department');
+                const researchProposalField = document.querySelector('#research_proposal');
+                const blockResearchProposal = document.querySelector('#block_research_proposal');
+
+                window.addEventListener('load', function() {
+                    const selectedDepartment = departmentSelect.value.toLowerCase();
+                    // Debugging
+                    console.log(selectedDepartment);
+
+                    console.log(selectedDepartment.includes('master'));
+                    
+                    // Cek jika pilihan mengandung kata 'master' atau 'doctorate'
+                    if (selectedDepartment.includes('master') || selectedDepartment.includes('doctorate')) {
+                        blockResearchProposal.classList.remove('hidden');
+                    } else {
+                        blockResearchProposal.classList.add('hidden');
+                    }
+                });
+
+                departmentSelect.addEventListener('change', function() {
+                    const selectedDepartment = departmentSelect.value.toLowerCase();
+                    // Debugging
+                    console.log(selectedDepartment);
+
+                    console.log(selectedDepartment.includes('master'));
+                    
+                    // Cek jika pilihan mengandung kata 'master' atau 'doctorate'
+                    if (selectedDepartment.includes('master') || selectedDepartment.includes('doctorate')) {
+                        blockResearchProposal.classList.remove('hidden');
+                    } else {
+                        blockResearchProposal.classList.add('hidden');
+                    }
+                });
+
+                // Trigger check on page load in case there is a pre-selected value
+                const selectedDepartmentOnLoad = departmentSelect.value.toLowerCase();
+                if (selectedDepartmentOnLoad.includes('master') || selectedDepartmentOnLoad.includes('doctorate')) {
+                    researchProposalField.classList.add('hidden');
+                }
+            });
+        </script>
+        <script>
+            function submitForm(e){
+                event.preventDefault(); 
+                const form = event.target.closest('form'); 
+                const spinner = form.querySelector('#spinner');
+                const registerText = form.querySelector('.register-text'); 
+                const registerButton = form.querySelector('#registerButton'); 
+                spinner.classList.remove('hidden');
+                spinner.classList.add('inline-block');
+                registerText.classList.add('hidden');
+                registerButton.classList.add('cursor-not-allowed', 'pointer-events-none', 'opacity-60');
+                registerButton.disabled = true; 
+                form.submit();
+            }
+        </script>
+        <script>
+
+        </script>
 @endsection

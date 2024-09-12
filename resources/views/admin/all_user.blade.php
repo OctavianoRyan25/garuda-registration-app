@@ -4,9 +4,18 @@
 
 @section('content')
     <div class="container mx-auto px-4 py-8">
-        <h2 class="text-2xl font-semibold text-center">All Data</h2>
+        <h2 class="text-2xl text-center font-bold">User Data</h2>
+        @if($errors->any())
+            <div class="my-4 p-4 text-red-700 bg-red-100 rounded-lg">
+                <ul class="list-disc pl-5">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="flex flex-wrap md:justify-end items-center mb-1">
-            <form action="{{ route('admin.allData') }}" method="GET" class="flex items-center my-3">
+            <form action="{{ route('admin.user') }}" method="GET" class="flex items-center my-3">
                 <label for="name" class="mr-2">Search:</label>
                 <input type="text" id="name" name="name" value="{{ request('name') }}" placeholder="John Doe" class="border border-gray-300 p-2 rounded-md">
                 <button type="submit" class="ml-2 bg-blue-900 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded">
@@ -90,21 +99,21 @@
                 <tbody>
                     @forelse($users as $index => $user)
                         <tr>
-                            <td class="py-2 px-4 border-b text-center">{{ $user->id }}</td>
-                            <td class="py-2 px-4 border-b text-center">{{ $user->apply->no_register }}</td>
+                            <td class="py-2 px-4 border-b text-center">{{ $index + $users->firstItem() }}</td>
+                            <td class="py-2 px-4 border-b text-center">{{ $user->apply->no_register ?? 'Not Applied Yet' }}</td>
                             <td class="py-2 px-4 border-b text-center">{{ $user->email }}</td>
-                            <td class="py-2 px-4 border-b text-center">{{ $user->apply->document->first_name }} {{ $user->apply->document->family_name }}</td>
+                            <td class="py-2 px-4 border-b text-center">{{ $user->apply->document->first_name ?? 'Not Applied Yet' }} {{ $user->apply->document->family_name ?? '' }}</td>
                             <td class="py-2 px-4 border-b text-center">
-                                <div class="items-center flex gap-2">
+                                <div class="items-center flex gap-2 justify-center">
                                     <!-- Edit Button -->
-                                    <button id="reset-password-button" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded inline-flex">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-book h-5 w-5 me-1 mt-1" viewBox="0 0 16 16">
-                                            <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/>
-                                        </svg>Reset Password
+                                    <button onclick="showModal({{ $user->id }})" id="reset-password-button" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold p-3 inline-flex rounded-md">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-pen h-5 w-5" viewBox="0 0 16 16">
+                                            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
+                                        </svg>
                                     </button>
                                 
                                     <!-- Delete Button -->
-                                    {{-- <form action="{{ route('admin.destroy', $user->id) }}" method="POST" class="inline-flex items-center p-3 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md">
+                                    <form action="{{ route('admin.deleteUser', $user->id) }}" method="POST" class="inline-flex items-center p-3 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md">
                                         @method('DELETE')
                                         @csrf
                                         <button type="button" onclick="confirmDelete(event)" class="flex items-center justify-center p-0">
@@ -131,9 +140,9 @@
         </div>
 
         {{-- Pagination Links --}}
-        {{-- <div class="mt-4">
-            {{ $applicants->links() }}
-        </div> --}}
+        <div class="mt-4">
+            {{ $users->links() }}
+        </div>
     </div>
 
     {{-- Modals --}}
@@ -165,6 +174,8 @@
                     spinner.classList.remove('hidden'); // Tampilkan spinner
                     form.submit(); // Kirim form setelah konfirmasi
                 }
+            }).catch((error) => {
+                console.error(error);
             });
         }
         function sortTable(n) {
@@ -204,9 +215,15 @@
             }
         }
         // Archive Button Click
-        document.getElementById('reset-password-button').addEventListener('click', function() {
-            document.getElementById('resetPassword').classList.remove('hidden');
-        });
+        function showModal(userId){
+            modal = document.getElementById('resetPassword');
+            modal.classList.remove('hidden');
+
+            document.getElementById('user_id').value = userId;
+
+            const form = document.getElementById('reset-password-form');
+            form.action = `/user/${userId}/update-password`;
+        }
 
         // Close Modal
         function closeModal(modalId) {

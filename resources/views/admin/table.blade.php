@@ -82,6 +82,15 @@
                 <p>{{ session('error') }}</p>
             </div>
             @endif
+            @if($errors->any())
+                <div class="my-4 p-4 text-red-700 bg-red-100 rounded-lg">
+                    <ul class="list-disc pl-5">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             {{-- Button Export Excel --}}
             <div class="flex justify-end mb-3">
                 <a href="{{ route('admin.exportApplicant') }}" class="inline-flex items-center p-3 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-md">
@@ -106,55 +115,72 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($applicants as $index => $applicant)
-                        <tr>
-                            <td>{{ $index+1 }}</td>
-                            <td>{{ $applicant->no_register }}</td>
-                            <td>{{ $applicant->document->first_name }}</td>
-                            <td>{{ $applicant->document->family_name }}</td>
-                            <td>{{ $applicant->document->email }}</td>
-                            <td>{{ $applicant->document->department }}</td>
-                            <td>{{ $applicant->document->nationality }}</td>
-                            <td>
-                                <div class="items-center flex gap-2">
-                                    <!-- Edit Button -->
-                                    <a href="{{ route('admin.showEditForm', $applicant->id) }}" class="inline-flex items-center p-3 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-md">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-pen h-5 w-5" viewBox="0 0 16 16">
-                                            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
-                                        </svg>
-                                    </a>
-                                
-                                    <!-- Delete Button -->
-                                    <form action="{{ route('admin.destroy', $applicant->id) }}" method="POST" class="inline-flex items-center p-3 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md">
-                                        @method('DELETE')
-                                        @csrf
-                                        <button type="button" onclick="confirmDelete(event)" class="flex items-center justify-center p-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 delete-button" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    @if($applicants->count() > 0)
+                        @foreach($applicants as $index => $applicant)
+                            <tr>
+                                <td>{{ $index+1 }}</td>
+                                <td>{{ $applicant->no_register }}</td>
+                                <td>{{ $applicant->document->first_name }}</td>
+                                <td>{{ $applicant->document->family_name }}</td>
+                                <td>{{ $applicant->document->email }}</td>
+                                <td>{{ $applicant->document->department }}</td>
+                                <td>{{ $applicant->document->nationality }}</td>
+                                <td>
+                                    <div class="items-center flex gap-2">
+                                        <!-- Edit Button -->
+                                        <a href="{{ route('admin.showEditForm', $applicant->id) }}" class="inline-flex items-center p-3 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-md">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-pen h-5 w-5" viewBox="0 0 16 16">
+                                                <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
                                             </svg>
-                                            {{-- Spinner --}}
-                                            <svg aria-hidden="true" id="spinner" role="status" class="hidden w-4 h-4 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
-                                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/>
+                                        </a>
+                                    
+                                        <!-- Delete Button -->
+                                        <form action="{{ route('admin.destroy', $applicant->id) }}" method="POST" class="inline-flex items-center p-3 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md">
+                                            @method('DELETE')
+                                            @csrf
+                                            <button type="button" onclick="confirmDelete(event)" class="flex items-center justify-center p-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 delete-button" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                                {{-- Spinner --}}
+                                                <svg aria-hidden="true" id="spinner" role="status" class="hidden w-4 h-4 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
+                                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    
+                                        <!-- View Button -->
+                                        <a href="{{ route('admin.showApplicant', $applicant->id) }}" class="inline-flex items-center p-3 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-md">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-eye h-5 w-5" viewBox="0 0 16 16">
+                                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                                            </svg>
+                                        </a>
+
+                                        {{-- Comment modal --}}
+                                        <button onclick="openModal({{ $applicant->id }}, '{{ $applicant->comment ?? '' }}')" class="inline-flex items-center p-3 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-md comment-button">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-chat-left-dots h-5 w-5" viewBox="0 0 16 16">
+                                                <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                                <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
                                             </svg>
                                         </button>
-                                    </form>
-                                
-                                    <!-- View Button -->
-                                    <a href="{{ route('admin.showApplicant', $applicant->id) }}" class="inline-flex items-center p-3 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium rounded-md">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-eye h-5 w-5" viewBox="0 0 16 16">
-                                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
-                                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </td>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="8" class="text-center">No data available</td>
                         </tr>
-                    @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
     </div>
+
+    {{-- Modals --}}
+    @include('admin.partials.add-comment')
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
@@ -187,6 +213,94 @@
                     spinner.classList.remove('hidden'); // Tampilkan spinner
                     form.submit(); // Kirim form setelah konfirmasi
                 }
+            });
+        }
+
+        function openModal(applyId, comment) {
+            // Set nilai input hidden dengan user ID
+            document.getElementById('apply_id').value = applyId;
+            
+            // Isi bagian 'Current Comment' dengan komentar yang ada
+            document.getElementById('current-comment').textContent = comment || 'Empty';
+            console.log(comment);
+            console.log("Apply ID =", applyId);
+            
+            // Tampilkan modal
+            document.getElementById('addCommentModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function addComment(event) {
+            event.preventDefault();
+            
+            const applyId = document.getElementById('apply_id').value;
+            
+            // Menyembunyikan tombol dan menampilkan spinner saat proses submit
+            const button = document.getElementById('button-add-comment');
+            const spinner = document.getElementById('spinner-in-modal');
+            button.disabled = true;
+            button.innerHTML = 'Adding Comment...';
+            spinner.classList.remove('hidden');
+            
+            // Ambil data dari form
+            const comment = document.getElementById('comment').value;
+            const formData = new FormData();
+            const url = `{{ route('admin.updateComment') }}`;
+            formData.append('id', applyId);
+            formData.append('comment', comment);
+            // console.log("Konten komen", comment);
+            // console.log("applyId", applyId);
+            console.log(formData)
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'url': url,
+                    "X-CSRF-Token": document.querySelector('input[name=_token]').value,
+                    "X-Http-Method-Override": "PATCH"
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Comment added successfully!',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+                button.disabled = false;
+                spinner.classList.add('hidden');
+                button.innerHTML = 'Add Comment';
+                window.location.reload();
+                // document.getElementById('add-comment-form').reset();
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to add comment.',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+                console.error('Error:', error);
+                button.disabled = false;
+                spinner.classList.add('hidden');
             });
         }
     </script>

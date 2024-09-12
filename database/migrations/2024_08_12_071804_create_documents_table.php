@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('department');
             $table->string('profile_picture');
             $table->string('passport');
-            $table->string('research_proposal');
+            $table->string('research_proposal')->nullable()->default(null);
             $table->string('study_plan');
             $table->string('english_proficiency');
             $table->string('transcript');

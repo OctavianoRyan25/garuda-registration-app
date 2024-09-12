@@ -61,7 +61,7 @@
                                     <div class="w-full px-3 xl:w-1/4 flex flex-col mt-1">
                                         {{-- Datepicker --}}
                                         <label for="date_of_birth" class="text-sm font-bold text-gray-600">Date of Birth<span class="text-red-500">*</span></label>
-                                        <input type="text" name="birth_date" id="birth_date" class="border border-gray-300 p-2 rounded-md mt-1 w-full" data-toggle="datepicker" value="{{ old('birth_date') }}">
+                                        <input type="text" name="birth_date" id="birth_date" class="border border-gray-300 p-2 rounded-md mt-1 w-full" data-toggle="datepicker" value="{{ old('birth_date') }}" placeholder="dd-MM-YYYY">
                                         @error('birth_date')
                                             <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                         @enderror
@@ -137,9 +137,9 @@
                                         @enderror
                                     </div>
                                     <div class="w-full px-3 xl:w-1/3">
-                                        <label for="research_proposal" class="text-sm font-bold text-gray-600">Research Proposal<span class="text-red-500">*</span></label>
-                                        <input id="research_proposal" type="file" name="research_proposal" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
-                                        @error('research_proposal')
+                                        <label for="medical_checkup" class="text-sm font-bold text-gray-600">Medical Checkup<span class="text-red-500">*</span></label>
+                                        <input id="medical_checkup" type="file" name="medical_checkup" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
+                                        @error('medical_checkup')
                                             <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -176,13 +176,6 @@
                                 </div>
                                 <div class="flex flex-wrap mb-4">
                                     <div class="w-full px-3 xl:w-1/3">
-                                        <label for="medical_checkup" class="text-sm font-bold text-gray-600">Medical Checkup<span class="text-red-500">*</span></label>
-                                        <input id="medical_checkup" type="file" name="medical_checkup" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
-                                        @error('medical_checkup')
-                                            <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="w-full px-3 xl:w-1/3">
                                         <label for="first_letter_of_recommendation" class="text-sm font-bold text-gray-600">First Letter Recommendation<span class="text-red-500">*</span></label>
                                         <input id="first_letter_of_recommendation" type="file" name="first_letter_of_recommendation" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
                                         @error('first_letter_of_recommendation')
@@ -193,6 +186,13 @@
                                         <label for="second_letter_of_recommendation" class="text-sm font-bold text-gray-600">Second Letter Recommendation<span class="text-red-500">*</span></label>
                                         <input id="second_letter_of_recommendation" type="file" name="second_letter_of_recommendation" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
                                         @error('second_letter_of_recommendation')
+                                            <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="w-full px-3 xl:w-1/3 hidden" id="block_research_proposal">
+                                        <label for="research_proposal" class="text-sm font-bold text-gray-600">Research Proposal<span class="text-red-500">*</span></label>
+                                        <input id="research_proposal" type="file" name="research_proposal" class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />
+                                        @error('research_proposal')
                                             <div class="text-red-500 text-sm mt-2">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -235,6 +235,30 @@
                     buttonClass: 'btn',
                     format: 'dd-mm-yyyy',
                 });
+
+                const departmentSelect = document.querySelector('#department');
+                const researchProposalField = document.querySelector('#research_proposal');
+                const blockResearchProposal = document.querySelector('#block_research_proposal');
+
+                departmentSelect.addEventListener('change', function() {
+                    const selectedDepartment = departmentSelect.value.toLowerCase();
+                    // Debugging
+                    console.log(selectedDepartment);
+
+                    console.log(selectedDepartment.includes('master'));
+                    
+                    // Cek jika pilihan mengandung kata 'master' atau 'doctorate'
+                    if (selectedDepartment.includes('master') || selectedDepartment.includes('doctorate')) {
+                        blockResearchProposal.classList.remove('hidden');
+                    } else {
+                        blockResearchProposal.classList.add('hidden');
+                    }
+                });
+
+                const selectedDepartmentOnLoad = departmentSelect.value.toLowerCase();
+                if (selectedDepartmentOnLoad.includes('master') || selectedDepartmentOnLoad.includes('doctorate')) {
+                    researchProposalField.classList.add('hidden');
+                }
             });
         </script>
         <script>

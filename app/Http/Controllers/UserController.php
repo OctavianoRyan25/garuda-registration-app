@@ -43,6 +43,7 @@ class UserController extends Controller
 
     private $departments = [
         'Bachelor of Informatics', 'Bachelor of Information System', 'Bachelor of Visual Communication Design', 'Bachelor of Communication Science'
+        , 'Master of Informatics', 'Master of Information System', 'Master of Visual Communication Design', 'Master of Communication Science'
     ];
 
     //Auth Contrtoller
@@ -150,7 +151,7 @@ class UserController extends Controller
             'department' => 'required',
             'profile_picture' => 'required|file|mimes:jpg,jpeg,png|dimensions:min_width=100,min_height=100,max_width=700,max_height=700|max:2048',
             'passport' => 'required|file|mimes:pdf|max:2048',
-            'research_proposal' => 'required|file|mimes:pdf|max:2048',
+            'research_proposal' => 'nullable|file|mimes:pdf|max:2048',
             'study_plan' => 'required|file|mimes:pdf|max:2048',
             'english_proficiency' => 'required|file|mimes:pdf|max:2048',
             'transcript' => 'required|file|mimes:pdf|max:2048',
@@ -226,6 +227,10 @@ class UserController extends Controller
     {
         $email_user = Auth::user();
         $document = Document::where('email', $email_user->email)->first();
+        if (!$document) {
+            Alert::toast('Failed to get profile.', 'error');
+            return redirect('/profile');
+        }
         return view('user.update_profile', [
             'countries' => $this->countries,
             'departments' => $this->departments

@@ -87,9 +87,9 @@
                     <tr>
                         <th data-priority="1">No</th>
                         <th data-priority="2">No Register</th>
-                        <th data-priority="3">First Name</th>
-                        <th data-priority="4">Family Name</th>
-                        <th data-priority="5">Email</th>
+                        <th data-priority="3">Name</th>
+                        <th data-priority="4">Nationality</th>
+                        <th data-priority="5">Department</th>
                         <th data-priority="6">Status</th>
                         <th data-priority="7">Action Status</th>
                     </tr>
@@ -98,11 +98,11 @@
                     @foreach($applicants as $index => $applicant)
                         <tr>
                             <td>{{ $index+1 }}</td>
-                            <td>{{ $applicant->no_register }}</td>
-                            <td>{{ $applicant->document->first_name }}</td>
-                            <td>{{ $applicant->document->family_name }}</td>
-                            <td>{{ $applicant->document->email }}</td>
-                            <td>
+                            <td class="text-center">{{ $applicant->no_register }}</td>
+                            <td class="text-center">{{ $applicant->document->first_name . " " . $applicant->document->family_name }}</td>
+                            <td class="text-center">{{ $applicant->document->nationality }}</td>
+                            <td class="text-center">{{ $applicant->document->department }}</td>
+                            <td class="text-center">
                                 @if($applicant->status_id == 6)
                                     <span class="bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs">{{ $applicant->status->name }}</span>
                                 @elseif($applicant->status->id == 5)

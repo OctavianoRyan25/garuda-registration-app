@@ -14,7 +14,7 @@
                 <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
             </li>
             <li class="flex items-center">
-                <a href="#" class="text-gray-500">{{ $apply_data->document->first_name . $apply_data->document->family_name }}</a>
+                <p href="#" class="text-gray-500">{{ $apply_data->document->first_name . $apply_data->document->family_name }}</p>
             </li>
         </ol>
     </nav>
@@ -27,7 +27,13 @@
                             <span class="block sm:inline">{{ Session('success') }}</span>
                         </div>
                     @endif
-                    {{-- Show Data in form --}}
+                    <div class="justify-start ms-3 md:ms-7">
+                        <a href="{{ route('admin.table') }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold p-2 mt-3 rounded-md inline-flex">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                            </svg>
+                        </a>
+                    </div>
                     <!-- component -->
                     <div class="flex">
                             <div class="p-4 px-4 md:p-8 mb-6">
@@ -47,7 +53,7 @@
                                             </div>
                                         </div>
                                         <div class="me-3 mt-3">
-                                            <img src="{{ asset('storage/' . $apply_data->document->profile_picture) }}" alt="" srcset="" class="rounded" class="">
+                                            <img src="{{ asset('storage/' . $apply_data->document->profile_picture) }}" alt="" srcset="" class="rounded h-52 md:h-auto sm:h-40 sm:w-40 object-cover">
                                         </div>
                                     </div>
                                     <div class="lg:col-span-2">

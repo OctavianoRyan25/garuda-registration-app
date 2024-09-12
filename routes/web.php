@@ -50,9 +50,10 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     // Route::get('/table/archive', [AdminController::class, 'archive'])->name('admin.archive');
     Route::post('table/archive', [AdminController::class, 'archiveYear'])->name('admin.archiveYear');
 
-    // Status
+    // Status & Comment
     Route::get('/table/user-status', [AdminController::class, 'status'])->name('admin.status');
     Route::post('/table/user/{id}/update-status', [AdminController::class, 'updateStatus'])->name('admin.updateStatus');
+    Route::patch('/table/user/comment', [AdminController::class, 'updateComment'])->name('admin.updateComment');
     // Blog
     Route::get('/blog', [AdminController::class, 'blog'])->name('admin.blog');
     Route::get('/blog/{id}/preview', [AdminController::class, 'showBlog'])->name('admin.showBlog');
@@ -63,7 +64,8 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::delete('/blog/{id}/delete', [AdminController::class, 'deleteBlog'])->name('admin.deleteBlog');
     //User
     Route::get('/user', [AdminController::class, 'showAllUser'])->name('admin.user');
-    Route::post('/user/{id}/update-password', [AdminController::class, 'updatePassword'])->name('admin.updatePassword');
+    Route::patch('/user/{id}/update-password', [AdminController::class, 'updatePassword'])->name('admin.updatePassword');
+    Route::delete('/user/{id}/delete', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
 });
 
 
