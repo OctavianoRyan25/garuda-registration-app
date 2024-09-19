@@ -111,11 +111,13 @@ class AdminController extends Controller
 
     // Controller for Admin Dashboard
     
-    public function index()
+    public function index(Request $request)
     {
+        $year = $request->input('year', Carbon::now()->year);
         // Show the number of users every each nationlity
         $results_nationality = DB::table('documents')
             ->select('nationality as NATIONALITY', DB::raw('COUNT(nationality) as COUNTER'))
+            ->whereYear('created_at', $year)
             ->groupBy('nationality')
             ->orderBy('nationality', 'asc')
             ->get();
@@ -130,28 +132,27 @@ class AdminController extends Controller
 
         $results_department = DB::table('documents')
             ->select('department as DEPARTMENT', DB::raw('COUNT(department) as COUNTER'))
+            ->whereYear('created_at', $year)
             ->groupBy('department')
             ->orderBy('department', 'asc')
             ->get();
 
-        // $data_department = $results_department->map(function($item) {
-        //     return [
-        //         'DEPARTMENT' => $item->DEPARTMENT,
-        //         'COUNTER' => $item->COUNTER
-        //     ];
-        // });
+        $regionCount = Document::whereYear('created_at', $year)
+            ->distinct('nationality')
+            ->count('region');
 
-        $regionCount = Document::distinct('nationality')->count('region');
-
-        $departmentCount = Document::distinct('department')->count('departments');
+        $departmentCount = Document::whereYear('created_at', $year)
+            ->distinct('department')
+            ->count('departments');
 
         return view('admin.index',[
             'count_user_today' => Document::where('created_at', '>=', Carbon::today())->count(),
-            'count_user' => Document::count(),
+            'count_user' => Document::whereYear('created_at', $year)->count(),
             'data_nationlity' => $data_nationlity,
             'data_department' => $results_department,
             'region_count' => $regionCount,
             'department_count' => $departmentCount,
+            'selected_year' => $year
         ]);
     }
 
@@ -175,9 +176,10 @@ class AdminController extends Controller
         $title = 'Delete User!';
         $text = "Are you sure you want to delete?";
         confirmDelete($title, $text);
-        $applicant = Apply::with('user', 'document')->get();
-
+        
         $year = Carbon::now()->year;
+        $applicant = Apply::with('user', 'document')->whereYear('created_at', $year)->get();
+
         return view('admin.table',
             [
                 'applicants' => $applicant,
@@ -217,6 +219,9 @@ class AdminController extends Controller
     public function showApplicant(string $id)
     {
         $apply = Apply::where('id', $id)->with('user', 'status', 'document')->first();
+        if (!$apply) {
+            return redirect()->route('admin.table')->with('error', 'Data not found');
+        }
         return view('admin.show', [
             'apply_data' => $apply
         ]);
@@ -354,7 +359,7 @@ class AdminController extends Controller
 
     public function status()
     {
-        $applicant = Apply::where('is_archived', false)->with('user', 'status', 'document')->get();
+        $applicant = Apply::where('is_archived', false)->with('user', 'status', 'document')->whereYear('created_at', Carbon::now()->year)->get();
         $status = DB::table('statuses')->get();
         return view('admin.status',
             [

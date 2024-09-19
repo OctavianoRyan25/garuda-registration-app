@@ -21,9 +21,13 @@ class DocumentFactory extends Factory
             'family_name' => $this->faker->lastName,
             'email' => $this->faker->unique()->safeEmail,
             'phone_number' => $this->faker->phoneNumber,
+            'birth_date' => $this->faker->date(),
+            'age' => $this->faker->numberBetween(1, 40),
+            'gender' => $this->faker->word,
             'nationality' => $this->faker->country,
             'passport_number' => $this->faker->randomNumber(8),
             'department' => $this->faker->word,
+            'profile_picture' => $this->faker->word,
             'passport' => $this->faker->word,
             'research_proposal' => $this->faker->word,
             'study_plan' => $this->faker->word,
@@ -33,6 +37,7 @@ class DocumentFactory extends Factory
             'medical_checkup' => $this->faker->word,
             'first_letter_of_recommendation' => $this->faker->word,
             'second_letter_of_recommendation' => $this->faker->word,
+            'created_at' => $this->faker->dateTimeBetween('-3 years', 'now'),
         ];
     }
 }

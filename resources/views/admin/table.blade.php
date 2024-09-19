@@ -192,6 +192,17 @@
             }).columns.adjust().responsive.recalc();
         });
 
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('add-comment-form');
+
+            // Disable Enter key to prevent form submission in modal
+            modal.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();  // Prevent form submission on Enter key
+                }
+            });
+        });
+
         function confirmDelete(event) {
             event.preventDefault(); // Mencegah form agar tidak submit secara langsung
             const form = event.target.closest('form'); // Temukan form terdekat

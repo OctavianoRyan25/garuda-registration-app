@@ -21,9 +21,9 @@ class ApplyFactory extends Factory
             'user_id' => $this->faker->numberBetween(1, 50),
             'no_register' => $this->faker->word,
             'status_id' => 1,
-            'second_status_id' => 4,
             'document_id' => $this->faker->numberBetween(1, 50),
             'is_archived' => false,
+            'comment' => $this->faker->sentence,
             'created_at' => $this->faker->dateTimeBetween('-3 years', 'now'),
         ];
     }

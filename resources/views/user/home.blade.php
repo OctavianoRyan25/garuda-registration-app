@@ -69,6 +69,10 @@
                                                     <span class="rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">{{ $apply_data->status->name }}</span>
                                                     @endif
                                                 </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">Comment:</span>
+                                                    <span class="text-xs md:text-xs lg:text-base md:font-medium">{{ $apply_data->comment ?? 'No comment added' }}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
