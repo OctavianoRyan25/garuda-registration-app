@@ -7,7 +7,7 @@
     <title>Register</title>
     <link rel="icon" href="{{ asset('assets/logo-udinus.png') }}" type="image/x-icon">
     <script type="module" src="{{ asset('build/assets/app-C1-XIpUa.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('build/assets/app-C6H2NvHB.css') }}">
+    <link rel="stylesheet" href="{{ asset('build/assets/app-7faw23md.css') }}">
     
 </head>
 <body>
@@ -21,7 +21,7 @@
             <div class="w-full h-100">
                 <h1 class="text-xl md:text-2xl font-bold leading-tight mt-12">Register your account</h1>
                 @if (session('error'))
-                    <div class="bg-red-500 p-4 rounded-lg mb-6 text-white text-center">
+                    <div class="bg-red-500 p-4 rounded-lg mb-6 mt-3 text-white text-center">
                         {{ session('error') }}
                     </div>
                 @endif

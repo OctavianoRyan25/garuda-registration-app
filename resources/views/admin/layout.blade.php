@@ -6,11 +6,11 @@
     <title>@yield('title')</title>
     <link rel="icon" href="{{ asset('assets/logo-udinus.png') }}" type="image/x-icon">
     <script type="module" src="{{ asset('build/assets/app-C1-XIpUa.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('build/assets/app-C6H2NvHB.css') }}">
+    <link rel="stylesheet" href="{{ asset('build/assets/app-7faw23md.css') }}">
     @yield('ex-css')
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://unpkg.com/alpinejs@3.4.2/dist/cdn.min.js" defer></script> --}}
-    @vite('resources/css/app.css')
+    {{-- @vite('resources/css/app.css') --}}
 </head>
 <body class="bg-gray-100">
     <!-- component -->
@@ -57,8 +57,8 @@
             <nav class="bg-white shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] hidden md:flex">
                 <div class="container mx-auto px-6 py-3">
                     <div class="flex items-center justify-between">
-                        <div class="text-gray-900 dark:text-white">
-                            <a href="#" class="text-lg font-semibold">Brand Name</a>
+                        <div class="text-white">
+                            <a href="#" class="text-lg font-semibold">UDINUS</a>
                         </div>
                         <div class="hidden md:block">
                             <!-- Add navigation links or buttons here -->

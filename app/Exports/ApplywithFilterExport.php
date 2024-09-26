@@ -22,7 +22,7 @@ class ApplywithFilterExport implements FromQuery, WithHeadings, WithMapping
 
     public function query()
     {
-        return Apply::query()->whereYear('created_at', $this->year)->with('status', 'secondStatus', 'document');
+        return Apply::query()->whereYear('created_at', $this->year)->with('status', 'document');
     }
 
     public function headings(): array

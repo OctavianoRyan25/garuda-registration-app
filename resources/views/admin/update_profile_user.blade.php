@@ -207,7 +207,7 @@
                             <div class="flex flex-wrap mb-4">
                                 <div class="w-full px-3">
                                     <button type="submit" class="btn btn-md bg-yellow-500 rounded-md p-3 w-full mt-10 hover:bg-yellow-400 hover:ease-in-out transition">
-                                        <p class="text-white text-center font-bold">Register</p>
+                                        <p class="text-white text-center font-bold">Update</p>
                                     </button>
                                 </div>
                             </div>

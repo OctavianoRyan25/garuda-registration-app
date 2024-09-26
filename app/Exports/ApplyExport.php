@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Apply;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -17,9 +18,16 @@ class ApplyExport implements FromQuery, WithHeadings, WithMapping
     //     return Apply::all();
     // }
 
+    protected $year;
+
+    public function __construct()
+    {
+        $this->year = Carbon::now()->year;
+    }
+
     public function query()
     {
-        return Apply::with('status', 'document');
+        return Apply::with('status', 'document')->whereYear('created_at', $this->year);
     }
 
     public function headings(): array

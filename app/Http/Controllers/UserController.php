@@ -54,6 +54,15 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
+        $today = now();
+        
+        $startDate = now()->setDate($today->year, 8, 1);
+        $endDate = now()->setDate($today->year, 9, 1);
+
+        if ($today->lt($startDate) || $today->gt($endDate)) {
+            return redirect('/register')->with('error', 'Registration has been closed.');
+        }
+
         $request->validate([
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8|confirmed',

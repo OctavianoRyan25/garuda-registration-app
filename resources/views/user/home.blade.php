@@ -99,28 +99,28 @@
                                 <div class="flex items-center p-6">
                                     <a
                                     href="https://garuda.dinus.ac.id/"
-                                    class="inline-flex h-9 items-center justify-center rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                                    class="inline-flex h-9 items-center justify-center rounded-md bg-[#003d7a] px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-yellow-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                                     >
-                                    Apply Now
+                                    See Now
                                     </a>
                                 </div>
                                 </div>
                                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm" data-v0-t="card">
                                 <div class="flex flex-col space-y-1.5 p-6">
                                     <h3 class="whitespace-nowrap text-2xl font-semibold leading-none tracking-tight">
-                                    Scholarship Resources
+                                    Timeline
                                     </h3>
                                 </div>
                                 <div class="p-6">
-                                    <p class="text-muted-foreground">Explore our library of scholarship guides and tips.</p>
+                                    <p class="text-muted-foreground">Status of your application will be updated soon.</p>
                                 </div>
                                 <div class="flex items-center p-6">
-                                    <a
-                                    href="#"
-                                    class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                                    <button
+                                    id="timeline"
+                                    class="inline-flex h-9 items-center justify-center rounded-md bg-[#003d7a] px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-yellow-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                                     >
-                                    Learn More
-                                    </a>
+                                    View Status
+                                    </button>
                                 </div>
                                 </div>
                                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm" data-v0-t="card">
@@ -136,8 +136,8 @@
                                 </div>
                                 <div class="flex items-center p-6">
                                     <a
-                                    href="#"
-                                    class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                                    href="https://garuda.dinus.ac.id/news"
+                                    class="inline-flex h-9 items-center justify-center rounded-md bg-[#003d7a] px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-yellow-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                                     >
                                     View Updates
                                     </a>
@@ -152,8 +152,8 @@
                                 </div>
                                 <div class="flex items-center p-6">
                                     <a
-                                    href="#"
-                                    class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                                    href="https://garuda.dinus.ac.id#contact"
+                                    class="inline-flex h-9 items-center justify-center rounded-md bg-[#003d7a] px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-yellow-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                                     >
                                     Contact Us
                                     </a>
@@ -167,5 +167,66 @@
         </div>
     </div>
 </section>
+
+{{-- Modal --}}
+{{-- <div id="timelineModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="relative w-full max-w-sm sm:max-w-lg lg:max-w-3xl max-h-[85vh] p-4 sm:p-6 bg-white rounded-lg shadow-lg transform scale-95 transition-transform duration-300 overflow-auto">
+        <h2 class="text-xl sm:text-2xl font-bold mb-4 text-center">Timeline Status</h2>
+
+        <!-- Responsive Image inside Modal -->
+        <img src="{{ asset('assets/timeline.png') }}" alt="Timeline" class="w-full h-auto max-h-[60Cvh] object-contain rounded-md">
+
+        <!-- Close Button -->
+        <div class="flex justify-end mt-4">
+            <button onclick="closeModal()" class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700">Close</button>
+        </div>
+    </div>
+</div> --}}
+
+<script>
+    window.onload = function() {
+        const modal = document.getElementById('timelineModal');
+        const modalContent = modal.querySelector('.transform');
+
+        // Show modal on page load
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100');
+
+        // Animate modal content
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }, 100);
+    };
+
+    function closeModal() {
+        const modal = document.getElementById('timelineModal');
+        const modalContent = modal.querySelector('.transform');
+
+        // Close modal with animation
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-95');
+
+        // Hide modal after animation
+        setTimeout(() => {
+            modal.classList.add('pointer-events-none');
+        }, 300);
+    }
+
+    const statusButton = document.getElementById('timeline');
+    statusButton.addEventListener('click', () => {
+        const modal = document.getElementById('timelineModal');
+        const modalContent = modal.querySelector('.transform');
+
+        // Show modal with animation
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+    });
+</script>
+
     
 @endsection
