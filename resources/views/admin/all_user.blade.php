@@ -1,10 +1,8 @@
 @extends('admin.layout')
-
 @section('title', 'All Data')
-
 @section('content')
     <div class="container mx-auto px-4 py-8">
-        <h2 class="text-2xl text-center font-bold">User Data</h2>
+        <h2 class="flex flex-col mb-5 text-center text-2xl font-bold">User Data</h2>
         @if($errors->any())
             <div class="my-4 p-4 text-red-700 bg-red-100 rounded-lg">
                 <ul class="list-disc pl-5">
@@ -87,37 +85,37 @@
         {{-- Data Table --}}
         <div class="overflow-x-auto bg-white rounded-lg shadow-md">
             <table id="sortable-table" class="min-w-full bg-white border border-gray-200">
-                <thead class="bg-gray-100">
+                <thead class="bg-[#003d7a] text-white">
                     <tr>
-                        <th class="py-2 px-4 border-b cursor-pointer" onclick="sortTable(0)">No</th>
-                        <th class="py-2 px-4 border-b cursor-pointer" onclick="sortTable(1)">No Register</th>
-                        <th class="py-2 px-4 border-b cursor-pointer" onclick="sortTable(2)">Email</th>
-                        <th class="py-2 px-4 border-b cursor-pointer" onclick="sortTable(3)">Name</th>
-                        <th class="py-2 px-4 border-b">Action</th>
+                        <th class="py-3 px-4 border-b cursor-pointer" onclick="sortTable(0)">No.</th>
+                        <th class="py-3 px-4 border-b cursor-pointer" onclick="sortTable(1)">No. Register</th>
+                        <th class="py-3 px-4 border-b cursor-pointer" onclick="sortTable(2)">Email</th>
+                        <th class="py-3 px-4 border-b cursor-pointer" onclick="sortTable(3)">Name</th>
+                        <th class="py-3 px-4 border-b">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($users as $index => $user)
-                        <tr>
+                        <tr class="even:bg-slate-200">
                             <td class="py-2 px-4 border-b text-center">{{ $index + $users->firstItem() }}</td>
                             <td class="py-2 px-4 border-b text-center">{{ $user->apply->no_register ?? 'Not Applied Yet' }}</td>
                             <td class="py-2 px-4 border-b text-center">{{ $user->email }}</td>
                             <td class="py-2 px-4 border-b text-center">{{ $user->apply->document->first_name ?? 'Not Applied Yet' }} {{ $user->apply->document->family_name ?? '' }}</td>
                             <td class="py-2 px-4 border-b text-center">
-                                <div class="items-center flex gap-2 justify-center">
+                                <div class="justify-center items-center flex gap-1">
                                     <!-- Edit Button -->
-                                    <button onclick="showModal({{ $user->id }})" id="reset-password-button" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold p-3 inline-flex rounded-md">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-pen h-5 w-5" viewBox="0 0 16 16">
+                                    <button onclick="showModal({{ $user->id }})" id="reset-password-button" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold p-2 inline-flex rounded-md">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-pen h-4 w-4" viewBox="0 0 16 16">
                                             <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
                                         </svg>
                                     </button>
                                 
                                     <!-- Delete Button -->
-                                    <form action="{{ route('admin.deleteUser', $user->id) }}" method="POST" class="inline-flex items-center p-3 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md">
+                                    <form action="{{ route('admin.deleteUser', $user->id) }}" method="POST" class="inline-flex items-center p-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-md">
                                         @method('DELETE')
                                         @csrf
                                         <button type="button" onclick="confirmDelete(event)" class="flex items-center justify-center p-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 delete-button" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 delete-button" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                             {{-- Spinner --}}

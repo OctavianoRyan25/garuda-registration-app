@@ -1,64 +1,7 @@
 @extends('admin.layout')
 @section('title', 'Data Peserta')
-@section('ex-css')
-    <!--Regular Datatables CSS-->
-    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
-    <!--Responsive Extension Datatables CSS-->
-    <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-    <style>
-        /* Custom CSS for DataTables */
-        .dataTables_wrapper select,
-        .dataTables_wrapper .dataTables_filter input {
-            color: #4a5568;
-            padding: .5rem 1rem;
-            line-height: 1.25;
-            border: 2px solid #edf2f7;
-            border-radius: .25rem;
-            background-color: #edf2f7;
-        }
-
-        table.dataTable.hover tbody tr:hover {
-            background-color: #ebf4ff;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            font-weight: 700;
-            border-radius: .25rem;
-            border: 1px solid transparent;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-            color: #fff !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .1), 0 1px 2px rgba(0, 0, 0, .06);
-            font-weight: 700;
-            border-radius: .25rem;
-            background: #667eea !important;
-            border: 1px solid transparent;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            color: #fff !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .1), 0 1px 2px rgba(0, 0, 0, .06);
-            font-weight: 700;
-            border-radius: .25rem;
-            background: #667eea !important;
-            border: 1px solid transparent;
-        }
-
-        table.dataTable.no-footer {
-            border-bottom: 1px solid #e2e8f0;
-            margin: .75em 0;
-        }
-
-        table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child:before,
-        table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
-            background-color: #667eea !important;
-        }
-    </style>
-@endsection
-
 @section('content')
-    <div class="container w-full xl:w-full mx-auto px-2">
+    <div class="container self-center">
         <nav class="text-black font-bold my-6" aria-label="Breadcrumb">
             <ol class="list-none p-0 inline-flex">
                 <li class="flex items-center">
@@ -72,7 +15,7 @@
         </nav>
         {{-- Table --}}
         <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
-            <div class="flex flex-col my-5 text-center text-2xl font-bold">Data Peserta</div>
+            <div class="flex flex-col mb-5 text-center text-2xl font-bold">Data Peserta</div>
             @if (session('success'))
                 <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 my-3" role="alert">
                     <p>{{ session('success') }}</p>
@@ -82,42 +25,71 @@
                 <p>{{ session('error') }}</p>
             </div>
             @endif
-            <table id="example" class="stripe hover" style="width:100%; padding-top: 1em; padding-bottom: 1em;">
-                <thead>
+            <div class="flex justify-between items-center">
+                <form action="{{ route('admin.status') }}" class="flex items-center my-3">
+                    <input type="search" name="search" id="search" placeholder="Cari data..." value="{{ request('search') }}" class="border border-gray-300 p-2 px-4 rounded-md focus:outline-[#003d7a]">
+                    <button type="submit" class="ml-2 bg-blue-900 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-search h-5 w-5" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                        </svg>
+                    </button>
+                </form>
+                <form id="paginationForm" method="GET" action="{{ url()->current() }}" class="flex items-center space-x-2">
+                    @if (request('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                    <label for="perPage" class="text-sm font-medium text-gray-700">Tampilkan:</label>
+                    <select name="perPage" id="perPage" class="border rounded-md py-1 px-2 text-sm" onchange="this.form.submit()">
+                        <option value="" {{ request('perPage') == 0 ? 'selected' : '' }}>-- Jumlah data --</option>
+                        <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request('perPage') == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                </form>
+            </div>
+            <table id="example" class="stripe" style="width:100%; padding-top: 1em; padding-bottom: 1em;">
+                <thead class="bg-[#003d7a] text-white">
                     <tr>
-                        <th data-priority="1">No</th>
-                        <th data-priority="2">No Register</th>
-                        <th data-priority="3">Name</th>
-                        <th data-priority="4">Nationality</th>
-                        <th data-priority="5">Department</th>
-                        <th data-priority="6">Status</th>
-                        <th data-priority="7">Action Status</th>
+                        <th data-priority="1" class="py-3 px-4 rounded-tl-lg">No.</th>
+                        <th data-priority="2" class="py-3 px-4">No. Register</th>
+                        <th data-priority="3" class="py-3 px-4">Name</th>
+                        <th data-priority="4" class="py-3 px-4">Nationality</th>
+                        <th data-priority="5" class="py-3 px-4">Department</th>
+                        <th data-priority="6" class="py-3 px-4">Status</th>
+                        <th data-priority="7" class="py-3 px-4 rounded-tr-lg">Action Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($applicants as $index => $applicant)
-                        <tr>
-                            <td>{{ $index+1 }}</td>
-                            <td class="text-center">{{ $applicant->no_register }}</td>
-                            <td class="text-center">{{ $applicant->document->first_name . " " . $applicant->document->family_name }}</td>
-                            <td class="text-center">{{ $applicant->document->nationality }}</td>
-                            <td class="text-center">{{ $applicant->document->department }}</td>
-                            <td class="text-center">
-                                @if($applicant->status_id == 6)
+                        <tr class="text-center even:bg-slate-200">
+                            <td>{{ $applicants->firstItem() + $index }}</td>
+                            <td>{{ $applicant->no_register }}</td>
+                            <td>{{ $applicant->document->first_name . " " . $applicant->document->family_name }}</td>
+                            <td>{{ $applicant->document->nationality }}</td>
+                            <td>{{ $applicant->document->department }}</td>
+                            <td>
+                                @if ($applicant->status_id == 6)
                                     <span class="bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs">{{ $applicant->status->name }}</span>
-                                @elseif($applicant->status->id == 5)
+                                @elseif ($applicant->status->id == 5)
                                     <span class="bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs">{{ $applicant->status->name }}</span>
+                                @elseif ($applicant->status->id == 4)
+                                    <span class="bg-cyan-200 text-cyan-600 py-1 px-3 rounded-full text-xs">{{ $applicant->status->name }}</span>
+                                @elseif ($applicant->status->id == 3)
+                                    <span class="bg-orange-200 text-orange-600 py-1 px-3 rounded-full text-xs">{{ $applicant->status->name }}</span>
+                                @elseif ($applicant->status->id == 2)
+                                    <span class="bg-purple-200 text-purple-600 py-1 px-3 rounded-full text-xs">{{ $applicant->status->name }}</span>
                                 @else
                                     <span class="bg-yellow-200 text-yellow-600 py-1 px-3 rounded-full text-xs">{{ $applicant->status->name }}</span>
                                 @endif
                             </td>
                             <td>
-                                <div class="items-center flex gap-2">
+                                <div class="justify-center items-center flex gap-2">
                                     <!-- Acc Button -->
                                     <form method="POST" class="inline-flex items-center p-3 text-white text-sm font-medium" action="{{ route('admin.updateStatus', $applicant->id) }}">
                                         @csrf
-                                        <select name="status" class="p-1 bg-white rounded-md me-3">
-                                            <option disabled>Select Status</option>
+                                        <select name="status" class="p-3 bg-[#003d7a] rounded-md me-3">
+                                            <option class="text-slate-300" disabled>Select Status</option>
                                             <option selected value="{{ $applicant->status_id }}">{{ $applicant->status->name }}</option>
                                             @foreach($statuses as $status)
                                                 <option value="{{ $status->id }}">{{ $status->name }}</option>
@@ -139,28 +111,13 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="mt-4">
+                {{ $applicants->appends(request()->query())->links() }}
+            </div>
         </div>
     </div>
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#example').DataTable({
-                responsive: true,
-                language:{
-                    lengthMenu: 
-                                'Display <select>' +
-                                '<option value="10">10</option>' +
-                                '<option value="50">50</option>' +
-                                '<option value="100">100</option>' +
-                                '<option value="-1">All</option>' +
-                                '</select> records'
-                }
-            }).columns.adjust().responsive.recalc();
-        });
-
         // Show spinner when button clicked
         document.addEventListener('DOMContentLoaded', function () {
             const forms = document.querySelectorAll('form');

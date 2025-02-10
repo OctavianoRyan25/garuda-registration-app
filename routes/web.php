@@ -34,7 +34,7 @@ Route::middleware(['guest:admin'])->prefix('admin')->group(function () {
 
 Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::post('logout-admin', [AdminController::class, 'logout'])->name('admin.logout');
-    Route::resource('admin', AdminController::class);
+    Route::resource('admin', AdminController::class)->except(['create', 'store', 'show', 'edit']);
     Route::get('/table/user', [AdminController::class, 'dashboard'])->name('admin.table');
     Route::get('/table/user/{id}', [AdminController::class, 'showApplicant'])->name('admin.showApplicant');
     Route::get('/table/user/{id}/edit', [AdminController::class, 'showEditFrom'])->name('admin.showEditForm');
@@ -54,18 +54,20 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::get('/table/user-status', [AdminController::class, 'status'])->name('admin.status');
     Route::post('/table/user/{id}/update-status', [AdminController::class, 'updateStatus'])->name('admin.updateStatus');
     Route::patch('/table/user/comment', [AdminController::class, 'updateComment'])->name('admin.updateComment');
-    // Blog
-    Route::get('/blog', [AdminController::class, 'blog'])->name('admin.blog');
-    Route::get('/blog/{id}/preview', [AdminController::class, 'showBlog'])->name('admin.showBlog');
-    Route::get('/blog/create', [AdminController::class, 'showCreateBlogForm'])->name('admin.createBlog');
-    Route::post('/blog/store', [AdminController::class, 'storeBlog'])->name('admin.storeBlog');
-    Route::get('/blog/{id}/edit', [AdminController::class, 'showEditBlogForm'])->name('admin.editBlog');
-    Route::put('/blog/{id}/update', [AdminController::class, 'updateBlog'])->name('admin.updateBlog');
-    Route::delete('/blog/{id}/delete', [AdminController::class, 'deleteBlog'])->name('admin.deleteBlog');
-    //User
-    Route::get('/user', [AdminController::class, 'showAllUser'])->name('admin.user');
-    Route::patch('/user/{id}/update-password', [AdminController::class, 'updatePassword'])->name('admin.updatePassword');
-    Route::delete('/user/{id}/delete', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
+    Route::prefix('admin')->group(function() {
+        // Blog
+        Route::get('/blog', [AdminController::class, 'blog'])->name('admin.blog');
+        Route::get('/blog/{id}/preview', [AdminController::class, 'showBlog'])->name('admin.showBlog');
+        Route::get('/blog/create', [AdminController::class, 'showCreateBlogForm'])->name('admin.createBlog');
+        Route::post('/blog/store', [AdminController::class, 'storeBlog'])->name('admin.storeBlog');
+        Route::get('/blog/{id}/edit', [AdminController::class, 'showEditBlogForm'])->name('admin.editBlog');
+        Route::put('/blog/{id}/update', [AdminController::class, 'updateBlog'])->name('admin.updateBlog');
+        Route::delete('/blog/{id}/delete', [AdminController::class, 'deleteBlog'])->name('admin.deleteBlog');
+        //User
+        Route::get('/user', [AdminController::class, 'showAllUser'])->name('admin.user');
+        Route::patch('/user/{id}/update-password', [AdminController::class, 'updatePassword'])->name('admin.updatePassword');
+        Route::delete('/user/{id}/delete', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
+    });
 });
 
 
