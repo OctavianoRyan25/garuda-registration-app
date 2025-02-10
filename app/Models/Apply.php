@@ -31,4 +31,17 @@ class Apply extends Model
     {
         return $this->belongsTo(Document::class);
     }
+
+    public function scopeSearch($query, array $searches)
+    {
+        return $query->join('documents', 'applies.document_id', '=', 'documents.id')
+            ->when($searches['search'] ?? false, function($query, $search) {
+                return $query->where('applies.no_register', 'like', "%$search%")
+                    ->orWhere('documents.first_name', 'like', "%$search%")
+                    ->orWhere('documents.family_name', 'like', "%$search%")
+                    ->orWhere('documents.email', 'like', "%$search%")
+                    ->orWhere('documents.department', 'like', "%$search%")
+                    ->orWhere('documents.nationality', 'like', "%$search%");
+            });
+    }
 }

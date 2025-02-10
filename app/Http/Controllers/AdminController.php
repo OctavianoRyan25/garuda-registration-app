@@ -171,14 +171,19 @@ class AdminController extends Controller
         return Excel::download(new ApplywithFilterExport($year), 'applicants_' . $year . '.xlsx');
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $title = 'Delete User!';
         $text = "Are you sure you want to delete?";
         confirmDelete($title, $text);
         
         $year = Carbon::now()->year;
-        $applicant = Apply::with('user', 'document')->whereYear('created_at', $year)->get();
+        $perPage = $request->input('perPage', 10);
+        $applicant = Apply::search($request->only('search'))
+            ->whereYear('applies.created_at', $year)
+            ->select('applies.*', 'documents.first_name', 'documents.family_name', 'documents.email', 'documents.department', 'documents.nationality')
+            ->paginate($perPage)
+            ->appends($request->query());
 
         return view('admin.table',
             [
@@ -357,10 +362,18 @@ class AdminController extends Controller
 
     //Controller for manage status of application
 
-    public function status()
+    public function status(Request $request)
     {
-        $applicant = Apply::where('is_archived', false)->with('user', 'status', 'document')->whereYear('created_at', Carbon::now()->year)->get();
+        $year = Carbon::now()->year;
+        $perPage = $request->input('perPage', 10);
+        $applicant = Apply::search($request->only('search'))
+            ->where('is_archived', false)->with('user', 'status', 'document')
+            ->whereYear('applies.created_at', $year)
+            ->select('applies.*', 'documents.first_name', 'documents.family_name', 'documents.department', 'documents.nationality')
+            ->paginate($perPage)
+            ->appends($request->query());
         $status = DB::table('statuses')->get();
+
         return view('admin.status',
             [
                 'applicants' => $applicant,
@@ -409,12 +422,15 @@ class AdminController extends Controller
     }
 
     // Controller for manage blog
-    public function blog()
+    public function blog(Request $request)
     {
         $title = 'Delete User!';
         $text = "Are you sure you want to delete?";
         confirmDelete($title, $text);
-        $blogs = Blog::all();
+        $perPage = $request->input('perPage', 10);
+        $blogs = Blog::search(request(['search']))
+            ->paginate($perPage)
+            ->appends($request->query());
         return view('admin.blog', [
             'blogs' => $blogs
         ]);

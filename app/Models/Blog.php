@@ -12,4 +12,11 @@ class Blog extends Model
     protected $guarded = [
         'id'
     ];
+
+    public function scopeSearch($query, array $searches)
+    {
+        $query->when($searches['search'] ?? false, function ($query, $search) {
+            return $query->where('title', 'like', '%' . $search . '%')->orWhere('slug', 'like', '%' . $search . '%');
+        });
+    }
 }
