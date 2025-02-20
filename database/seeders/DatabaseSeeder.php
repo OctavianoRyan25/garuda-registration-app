@@ -39,10 +39,15 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
+        Admin::create([
+            'email' => 'adminlkui@gmail.com',
+            'password' => bcrypt('dinuspolke-123'),
+        ]);
+
         Blog::factory(20)->create();
 
-        User::factory(50)->create();
-        Document::factory()->count(50)->create();
-        Apply::factory()->count(50)->create();
+        // User::factory(50)->create();
+        // Document::factory()->count(50)->create();
+        // Apply::factory()->count(50)->create();
     }
 }

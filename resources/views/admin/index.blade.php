@@ -1,162 +1,187 @@
 @extends('admin.layout')
 @section('title', 'Dashboard')
 @section('content')
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <div class="container mx-auto px-4 sm:px-8">
         <!-- component -->
-        <div class="flex flex-col my-5 text-center text-2xl font-bold">Dashboard</div>
-        <form method="GET" action="{{ route('admin.index') }}" class="my-3">
-            <div class="relative w-full md:w-56">
-                <select name="year" id="year" class="block appearance-none w-full bg-white border border-gray-300 hover:border-blue-500 px-4 py-2 pr-8 rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onchange="this.form.submit()">
-                    @for ($i = date('Y'); $i >= 2021; $i--)
-                        <option value="{{ $i }}" {{ $selected_year == $i ? 'selected' : '' }}>
-                            {{ $i }}
-                        </option>
-                    @endfor
-                </select>
-                <!-- Arrow icon -->
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                    </svg>
-                </div>
-            </div>
-        </form>
-        
-        <div class="flex flex-wrap -m-4 text-center">
-            <div class="p-4 md:w-1/4 sm:w-1/2 w-full">
-                <div class="border-2 bg-white shadow-lg px-4 py-6 rounded-lg transform transition duration-300 hover:scale-110">
-                    <img src="{{ asset('assets/user.png') }}" alt="user" class="w-12 h-12 mb-3 inline-block">
-                    <h2 class="title-font font-medium text-3xl text-gray-900">{{ $count_user_today }}</h2>
-                    <p class="leading-relaxed">User Registered Today</p>
-                </div>
-            </div>
-            <div class="p-4 md:w-1/4 sm:w-1/2 w-full">
-                <div class="border-2 bg-white shadow-lg px-4 py-6 rounded-lg transform transition duration-300 hover:scale-110">
-                    <img src="{{ asset('assets/user.png') }}" alt="user" class="w-12 h-12 mb-3 inline-block">
-                    <h2 class="title-font font-medium text-3xl text-gray-900">{{ $count_user }}</h2>
-                    <p class="leading-relaxed">All User Registered in {{ $selected_year }}</p>
-                </div>
-            </div>
-            
-            <div class="p-4 md:w-1/4 sm:w-1/2 w-full">
-                <div class="border-2 bg-white shadow-lg px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" clip-rule="evenodd" viewBox="0 0 24 24" id="globe" class="w-12 h-12 mb-3 inline-block">
-                        <circle cx="12" cy="12" r="10.5" fill="#5d9cec"></circle>
-                        <path fill="#3679ce" d="M13.5 22.393c-5.086-.729-9-5.107-9-10.393 0-5.286 3.914-9.664 9-10.393-.49-.071-.991-.107-1.5-.107C6.205 1.5 1.5 6.205 1.5 12S6.205 22.5 12 22.5c.509 0 1.01-.036 1.5-.107Z"></path>
-                        <path fill="#e7e7e7" d="M12 1.5c-1.465 0-2.831.772-3.93 2.114C6.522 5.507 5.5 8.557 5.5 12c0 3.443 1.022 6.493 2.57 8.386C9.169 21.728 10.535 22.5 12 22.5c1.465 0 2.831-.772 3.93-2.114 1.548-1.893 2.57-4.943 2.57-8.386 0-3.443-1.022-6.493-2.57-8.386C14.831 2.272 13.465 1.5 12 1.5Zm0 1c1.184 0 2.268.662 3.156 1.747C16.586 5.995 17.5 8.82 17.5 12c0 3.18-.914 6.005-2.344 7.753C14.268 20.838 13.184 21.5 12 21.5c-1.184 0-2.268-.662-3.156-1.747C7.414 18.005 6.5 15.18 6.5 12c0-3.18.914-6.005 2.344-7.753C9.732 3.162 10.816 2.5 12 2.5Z"></path><path fill="#e7e7e7" d="M11.5 1.512v20.976a10.396 10.396 0 0 0 1 0V1.512a10.396 10.396 0 0 0-1 0Z"></path><path fill="#e7e7e7" d="M21.902 8.5H2.098c-.115.326-.215.66-.298 1h20.4c-.083-.34-.183-.674-.298-1zm.298 6H1.8c.083.34.183.674.298 1h19.804c.115-.326.215-.66.298-1z"></path>
-                        <path d="M12 1.5C6.205 1.5 1.5 6.205 1.5 12S6.205 22.5 12 22.5 22.5 17.795 22.5 12 17.795 1.5 12 1.5Zm0 1c5.243 0 9.5 4.257 9.5 9.5s-4.257 9.5-9.5 9.5-9.5-4.257-9.5-9.5S6.757 2.5 12 2.5Z"></path>
-                        <path d="M12 1.5c-1.465 0-2.831.772-3.93 2.114C6.522 5.507 5.5 8.557 5.5 12c0 3.443 1.022 6.493 2.57 8.386C9.169 21.728 10.535 22.5 12 22.5c1.465 0 2.831-.772 3.93-2.114 1.548-1.893 2.57-4.943 2.57-8.386 0-3.443-1.022-6.493-2.57-8.386C14.831 2.272 13.465 1.5 12 1.5Zm0 1c1.184 0 2.268.662 3.156 1.747C16.586 5.995 17.5 8.82 17.5 12c0 3.18-.914 6.005-2.344 7.753C14.268 20.838 13.184 21.5 12 21.5c-1.184 0-2.268-.662-3.156-1.747C7.414 18.005 6.5 15.18 6.5 12c0-3.18.914-6.005 2.344-7.753C9.732 3.162 10.816 2.5 12 2.5Z"></path><path d="M11.5 2v20a.5.5 0 0 0 1 0V2a.5.5 0 0 0-1 0Z"></path><path d="M21.541 8.5H2.459a.5.5 0 0 0 0 1h19.082a.5.5 0 0 0 0-1zm0 6H2.459a.5.5 0 0 0 0 1h19.082a.5.5 0 0 0 0-1z"></path>
-                    </svg>
-                    <h2 class="title-font font-medium text-3xl text-gray-900">{{ $region_count }}</h2>
-                    <p class="leading-relaxed">Region</p>
-                </div>
-            </div>
-            <div class="p-4 md:w-1/4 sm:w-1/2 w-full">
-                <div class="border-2 bg-white shadow-lg px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110"">
-                    <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 47.5 47.5" viewBox="0 0 47.5 47.5" id="department" class="w-12 h-12 mb-3 inline-block">
-                        <defs><clipPath id="a"><path d="M0 38h38V0H0v38Z"></path></clipPath></defs><g clip-path="url(#a)" transform="matrix(1.25 0 0 -1.25 0 47.5)"><path fill="#ffcc4d" d="M0 0a2 2 0 0 1 2-2h18a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V0Z" transform="translate(15 3)"></path><path fill="#bcbec0" d="M0 0h-14v-2H2a2 2 0 0 1-2 2" transform="translate(35 25)"></path><path fill="#55acee" d="M21 1h14v20H21V1Z"></path><path fill="#ffe8b6" d="M0 0h-16a2 2 0 0 1-2-2v-32a2 2 0 0 1 2-2H2v34a2 2 0 0 1-2 2" transform="translate(19 37)"></path><path fill="#bcbec0" d="M0 0h-16a2 2 0 0 1-2-2H2a2 2 0 0 1-2 2" transform="translate(19 37)"></path><path fill="#55acee" d="M3 11h16v4H3v-4zM3 17h16v4H3v-4zM3 23h16v4H3v-4zM3 29h16v4H3v-4zM3 1h16v8H3V1Z"></path><path fill="#3b88c3" d="M7 1h8v4H7V1ZM24 1h8v4h-8V1z"></path><path fill="#ffcc4d" d="M36 9H21v2h15V9zM36 15H21v2h15v-2z"></path><path fill="#dd2e44" d="M0 0a2 2 0 0 0-2-2h-10a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V0Z" transform="translate(37 30)"></path><path fill="#58595b" d="M29 25h-2v3h2v-3zM33 25h-2v3h2v-3z"></path><path fill="#f4abba" d="M27 30h-2v2h2v-2z"></path><path fill="#fff" d="M29 30h-2v2h2v-2z"></path><path fill="#f4abba" d="M31 30h-2v2h2v-2z"></path><path fill="#fff" d="M33 30h-2v2h2v-2z"></path><path fill="#f4abba" d="M35 30h-2v2h2v-2z"></path></g>
-                    </svg>
-                    <h2 class="title-font font-medium text-3xl text-gray-900">{{ $department_count }}</h2>
-                    <p class="leading-relaxed">Department</p>
-                </div>
-            </div>
-        </div>
-        <div class="flex flex-wrap w-full mt-10">
-            <div class="w-full xl:w-1/2 p-2">
-                <h2 class="text-lg font-semibold text-gray-900">Users by Nationality</h2>
-                <div class="relative h-96">
-                    <canvas id="myChart"></canvas>
-                </div>
-            </div>
-            <div class="w-full xl:w-1/2 p-2">
-                <h2 class="text-lg font-semibold text-gray-900">Users by Department</h2>
-                <div class="relative">
-                    <div class="flex flex-col">
-                        <div class="-m-1.5 overflow-x-auto">
-                            <div class="p-1.5 min-w-full inline-block align-middle">
-                                <div class="overflow-hidden">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Name</th>
-                                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Total</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($data_department as $department)
-                                        <tr class="odd:bg-white even:bg-gray-100 hover:bg-gray-100">
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">{{ $department->DEPARTMENT }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $department->COUNTER }}</td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                                </div>
+        <div class="flex justify-between items-center mx-6 mt-12">
+            <div data-aos="flip-right"
+                class="bg-white rounded-xl shadow-md p-6 hover:transform hover:translate-y-1 hover:shadow-lg transition-all">
+                <form method="GET" action="{{ route('admin.index') }}">
+                    <!-- Dropdown Tahun -->
+                    <div class="relative w-full md:w-56 px-6 flex flex-col items-start">
+                        <label for="year" class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z" />
+                                <path
+                                    d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+                            </svg>
+                            Pilih Tahun
+                        </label>
+                        <div class="relative w-full">
+                            <select name="year" id="year"
+                                class="block w-full appearance-none bg-white border border-gray-300 hover:border-blue-500 px-4 py-2 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out"
+                                onchange="this.form.submit()">
+                                @for ($i = date('Y'); $i >= 2021; $i--)
+                                    <option value="{{ $i }}" {{ $selected_year == $i ? 'selected' : '' }}>
+                                        {{ $i }}
+                                    </option>
+                                @endfor
+                            </select>
+                            <!-- Icon Dropdown -->
+                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                <svg class="fill-current text-gray-700 w-5 h-5" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20">
+                                    <path
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                </svg>
                             </div>
                         </div>
                     </div>
+                </form>
+
+            </div>
+            <!-- Welcome Card -->
+            <div class="bg-blue-500 text-white px-6 py-4 rounded-lg shadow-md flex items-center" data-aos="flip-left">
+                <svg class="w-10 h-10 text-white mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5.121 17.804A4 4 0 007 18h10a4 4 0 001.879-.196M15 11h.01M9 11h.01M12 14h.01M4 6h16M4 6a2 2 0 012-2h12a2 2 0 012 2M4 6v12a2 2 0 002 2h12a2 2 0 002-2V6" />
+                </svg>
+                <div>
+                    <h2 class="text-lg font-semibold">Welcome, Admin!</h2>
+                    <p class="text-sm">Kelola data dengan mudah dan efisien.</p>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 mt-12">
+            <!-- Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+                <div data-aos="fade-right"
+                    class="bg-white rounded-xl shadow-md p-6 hover:transform hover:translate-y-1 hover:shadow-lg transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                        class="bi bi-person-fill text-blue-500 text-4xl mb-2 h-14 w-14" viewBox="0 0 16 16">
+                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                    </svg>
+                    <p class="text-3xl font-semibold text-gray-800">{{ $count_user_today }}</p>
+                    <p class="text-gray-500">User Registered Today</p>
+                </div>
+
+                <div data-aos="fade-right"
+                    class="bg-white rounded-xl shadow-md p-6 hover:transform hover:translate-y-1 hover:shadow-lg transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                        class="bi bi-people-fill text-blue-500 text-4xl mb-2 h-14 w-14" viewBox="0 0 16 16">
+                        <path
+                            d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
+                    </svg>
+                    <p class="text-3xl font-semibold text-gray-800">{{ $count_user }}</p>
+                    <p class="text-gray-500">All Users in 2025</p>
+                </div>
+
+                <div data-aos="fade-left"
+                    class="bg-white rounded-xl shadow-md p-6 hover:transform hover:translate-y-1 hover:shadow-lg transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                        class="bi bi-globe2 text-blue-500 text-4xl mb-2 h-14 w-14" viewBox="0 0 16 16">
+                        <path
+                            d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m7.5-6.923c-.67.204-1.335.82-1.887 1.855q-.215.403-.395.872c.705.157 1.472.257 2.282.287zM4.249 3.539q.214-.577.481-1.078a7 7 0 0 1 .597-.933A7 7 0 0 0 3.051 3.05q.544.277 1.198.49zM3.509 7.5c.036-1.07.188-2.087.436-3.008a9 9 0 0 1-1.565-.667A6.96 6.96 0 0 0 1.018 7.5zm1.4-2.741a12.3 12.3 0 0 0-.4 2.741H7.5V5.091c-.91-.03-1.783-.145-2.591-.332M8.5 5.09V7.5h2.99a12.3 12.3 0 0 0-.399-2.741c-.808.187-1.681.301-2.591.332zM4.51 8.5c.035.987.176 1.914.399 2.741A13.6 13.6 0 0 1 7.5 10.91V8.5zm3.99 0v2.409c.91.03 1.783.145 2.591.332.223-.827.364-1.754.4-2.741zm-3.282 3.696q.18.469.395.872c.552 1.035 1.218 1.65 1.887 1.855V11.91c-.81.03-1.577.13-2.282.287zm.11 2.276a7 7 0 0 1-.598-.933 9 9 0 0 1-.481-1.079 8.4 8.4 0 0 0-1.198.49 7 7 0 0 0 2.276 1.522zm-1.383-2.964A13.4 13.4 0 0 1 3.508 8.5h-2.49a6.96 6.96 0 0 0 1.362 3.675c.47-.258.995-.482 1.565-.667m6.728 2.964a7 7 0 0 0 2.275-1.521 8.4 8.4 0 0 0-1.197-.49 9 9 0 0 1-.481 1.078 7 7 0 0 1-.597.933M8.5 11.909v3.014c.67-.204 1.335-.82 1.887-1.855q.216-.403.395-.872A12.6 12.6 0 0 0 8.5 11.91zm3.555-.401c.57.185 1.095.409 1.565.667A6.96 6.96 0 0 0 14.982 8.5h-2.49a13.4 13.4 0 0 1-.437 3.008M14.982 7.5a6.96 6.96 0 0 0-1.362-3.675c-.47.258-.995.482-1.565.667.248.92.4 1.938.437 3.008zM11.27 2.461q.266.502.482 1.078a8.4 8.4 0 0 0 1.196-.49 7 7 0 0 0-2.275-1.52c.218.283.418.597.597.932m-.488 1.343a8 8 0 0 0-.395-.872C9.835 1.897 9.17 1.282 8.5 1.077V4.09c.81-.03 1.577-.13 2.282-.287z" />
+                    </svg>
+                    <p class="text-3xl font-semibold text-gray-800">{{ $region_count }}</p>
+                    <p class="text-gray-500">Regions</p>
+                </div>
+
+                <div data-aos="fade-left"
+                    class="bg-white rounded-xl shadow-md p-6 hover:transform hover:translate-y-1 hover:shadow-lg transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                        class="bi bi-building-fill-up text-blue-500 text-4xl mb-2 h-14 w-14"" viewBox="0 0 16 16">
+                        <path
+                            d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.354-5.854 1.5 1.5a.5.5 0 0 1-.708.708L13 11.707V14.5a.5.5 0 0 1-1 0v-2.793l-.646.647a.5.5 0 0 1-.708-.708l1.5-1.5a.5.5 0 0 1 .708 0" />
+                        <path
+                            d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7.256A4.5 4.5 0 0 0 12.5 8a4.5 4.5 0 0 0-3.59 1.787A.5.5 0 0 0 9 9.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .39-.187A4.5 4.5 0 0 0 8.027 12H6.5a.5.5 0 0 0-.5.5V16H3a1 1 0 0 1-1-1zm2 1.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5m3 0v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5m3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5M7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5M4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z" />
+                    </svg>
+                    <p class="text-3xl font-semibold text-gray-800">{{ $department_count }}</p>
+                    <p class="text-gray-500">Department</p>
+                </div>
+            </div>
+
+            <!-- Users by Nationality & Users by Department -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <!-- Grafik Users by Nationality -->
+                <div data-aos="zoom-in-up"
+                    class="bg-white col-span-4 rounded-xl shadow-md p-6 hover:transform hover:translate-y-1 hover:shadow-lg transition-all">
+                    <div class="flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                            class="bi bi-bar-chart-line-fill h-7 me-1 text-blue-700" viewBox="0 0 16 16">
+                            <path
+                                d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1z" />
+                        </svg>
+                        <h2 class="font-bold text-2xl text-gray-800 mb-5 text-center mt-5">USERS DISTRIBUTION BY
+                            DEPARTMENTS</h2>
+                    </div>
+                    <hr class="my-5 w-full border-1 border-gray-200">
+                    <canvas id="myChart"></canvas>
+                </div>
+
+                <!-- Tabel Users by Department -->
+                <div
+                    class="bg-white col-span-2 rounded-lg shadow-md p-6 hover:transform hover:translate-y-1 hover:shadow-lg transition-all">
+                    <h2 class="font-semibold text-sm text-gray-800 mb-5">Users by Region</h2>
+                    <table class="w-full table-auto text-sm">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 font-semibold">
+                                <th class="px-4 py-2">NAME</th>
+                                <th class="px-4 py-2 text-center">TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($data_nationlity as $region)
+                                <tr class="hover:bg-gray-100">
+                                    <td class="border px-4 py-2">{{ $region->NATIONALITY }}</td>
+                                    <td class="border px-4 py-2 text-center">{{ $region->COUNTER }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
         <script>
-            // Pass data from Laravel to JavaScript
-            window.chartData = @json($data_nationlity);
-    
-            document.addEventListener('DOMContentLoaded', function () {
+            AOS.init();
+        </script>
+        <script>
+            window.chartData = @json($data_department);
+
+            document.addEventListener('DOMContentLoaded', function() {
                 var ctx = document.getElementById('myChart').getContext('2d');
                 var data = window.chartData;
-    
+
                 var labels = data.map(function(item) {
-                    return item.NATIONALITY;
+                    return item.DEPARTMENT;
                 });
-    
+
                 var counts = data.map(function(item) {
                     return item.COUNTER;
                 });
-    
+
+                // Generate random colors for each bar
+                var backgroundColors = labels.map(() =>
+                    `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`
+                );
+                var borderColors = backgroundColors.map(color => color.replace('0.5',
+                    '1')); // Make border color fully opaque
+
                 var myChart = new Chart(ctx, {
-                    type: 'bar', // You can change this to 'line', 'pie', etc.
+                    type: 'bar',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Users by Nationality',
+                            label: 'Users by Department',
                             data: counts,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-            });
-            document.addEventListener('DOMContentLoaded', function () {
-                var ctx = document.getElementById('myChart2').getContext('2d');
-                var data = window.chartData;
-    
-                var labels = data.map(function(item) {
-                    return item.NATIONALITY;
-                });
-    
-                var counts = data.map(function(item) {
-                    return item.COUNTER;
-                });
-    
-                var myChart = new Chart(ctx, {
-                    type: 'bar', // You can change this to 'line', 'pie', etc.
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Users by Nationality',
-                            data: counts,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
                             borderWidth: 1
                         }]
                     },
@@ -170,5 +195,6 @@
                 });
             });
         </script>
+
     </div>
 @endsection

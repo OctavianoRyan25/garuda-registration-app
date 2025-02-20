@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('applies', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('no_register');
-            $table->integer('status_id');
-            $table->integer('document_id');
+            $table->foreignId('status_id')->constrained('statuses')->onDelete('cascade');
+            $table->foreignId('document_id')->constrained('documents')->onDelete('cascade');
             $table->string('comment')->nullable()->default(null);
             $table->boolean('is_archived')->default(false);
             $table->timestamps();

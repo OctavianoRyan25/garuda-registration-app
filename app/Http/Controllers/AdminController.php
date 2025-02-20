@@ -8,6 +8,7 @@ use App\Models\Admin;
 use App\Models\Apply;
 use App\Models\Blog;
 use App\Models\Document;
+use App\Models\Queue;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -24,34 +25,228 @@ use RealRashid\SweetAlert\Facades\Alert as FacadesAlert;
 class AdminController extends Controller
 {
     private $countries = [
-        'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 
-        'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 
-        'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 
-        'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cabo Verde', 'Cambodia', 'Cameroon', 
-        'Canada', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo, Democratic Republic of the', 
-        'Congo, Republic of the', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 
-        'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 
-        'Eswatini', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 
-        'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 
-        'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 
-        'Kiribati', 'Korea, North', 'Korea, South', 'Kosovo', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 
-        'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Madagascar', 'Malawi', 'Malaysia', 
-        'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 
-        'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 
-        'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Macedonia', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Palestine', 
-        'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 
-        'Rwanda', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 
-        'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 
-        'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 
-        'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Timor-Leste', 'Togo', 'Tonga', 
-        'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 
-        'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 
-        'Yemen', 'Zambia', 'Zimbabwe'   
+        'Afghanistan',
+        'Albania',
+        'Algeria',
+        'Andorra',
+        'Angola',
+        'Antigua and Barbuda',
+        'Argentina',
+        'Armenia',
+        'Australia',
+        'Austria',
+        'Azerbaijan',
+        'Bahamas',
+        'Bahrain',
+        'Bangladesh',
+        'Barbados',
+        'Belarus',
+        'Belgium',
+        'Belize',
+        'Benin',
+        'Bhutan',
+        'Bolivia',
+        'Bosnia and Herzegovina',
+        'Botswana',
+        'Brazil',
+        'Brunei',
+        'Bulgaria',
+        'Burkina Faso',
+        'Burundi',
+        'Cabo Verde',
+        'Cambodia',
+        'Cameroon',
+        'Canada',
+        'Central African Republic',
+        'Chad',
+        'Chile',
+        'China',
+        'Colombia',
+        'Comoros',
+        'Congo, Democratic Republic of the',
+        'Congo, Republic of the',
+        'Costa Rica',
+        'Croatia',
+        'Cuba',
+        'Cyprus',
+        'Czech Republic',
+        'Denmark',
+        'Djibouti',
+        'Dominica',
+        'Dominican Republic',
+        'Ecuador',
+        'Egypt',
+        'El Salvador',
+        'Equatorial Guinea',
+        'Eritrea',
+        'Estonia',
+        'Eswatini',
+        'Ethiopia',
+        'Fiji',
+        'Finland',
+        'France',
+        'Gabon',
+        'Gambia',
+        'Georgia',
+        'Germany',
+        'Ghana',
+        'Greece',
+        'Grenada',
+        'Guatemala',
+        'Guinea',
+        'Guinea-Bissau',
+        'Guyana',
+        'Haiti',
+        'Honduras',
+        'Hungary',
+        'Iceland',
+        'India',
+        'Indonesia',
+        'Iran',
+        'Iraq',
+        'Ireland',
+        'Israel',
+        'Italy',
+        'Jamaica',
+        'Japan',
+        'Jordan',
+        'Kazakhstan',
+        'Kenya',
+        'Kiribati',
+        'Korea, North',
+        'Korea, South',
+        'Kosovo',
+        'Kuwait',
+        'Kyrgyzstan',
+        'Laos',
+        'Latvia',
+        'Lebanon',
+        'Lesotho',
+        'Liberia',
+        'Libya',
+        'Liechtenstein',
+        'Lithuania',
+        'Luxembourg',
+        'Madagascar',
+        'Malawi',
+        'Malaysia',
+        'Maldives',
+        'Mali',
+        'Malta',
+        'Marshall Islands',
+        'Mauritania',
+        'Mauritius',
+        'Mexico',
+        'Micronesia',
+        'Moldova',
+        'Monaco',
+        'Mongolia',
+        'Montenegro',
+        'Morocco',
+        'Mozambique',
+        'Myanmar',
+        'Namibia',
+        'Nauru',
+        'Nepal',
+        'Netherlands',
+        'New Zealand',
+        'Nicaragua',
+        'Niger',
+        'Nigeria',
+        'North Macedonia',
+        'Norway',
+        'Oman',
+        'Pakistan',
+        'Palau',
+        'Palestine',
+        'Panama',
+        'Papua New Guinea',
+        'Paraguay',
+        'Peru',
+        'Philippines',
+        'Poland',
+        'Portugal',
+        'Qatar',
+        'Romania',
+        'Russia',
+        'Rwanda',
+        'Saint Kitts and Nevis',
+        'Saint Lucia',
+        'Saint Vincent and the Grenadines',
+        'Samoa',
+        'San Marino',
+        'Sao Tome and Principe',
+        'Saudi Arabia',
+        'Senegal',
+        'Serbia',
+        'Seychelles',
+        'Sierra Leone',
+        'Singapore',
+        'Slovakia',
+        'Slovenia',
+        'Solomon Islands',
+        'Somalia',
+        'South Africa',
+        'South Sudan',
+        'Spain',
+        'Sri Lanka',
+        'Sudan',
+        'Suriname',
+        'Sweden',
+        'Switzerland',
+        'Syria',
+        'Taiwan',
+        'Tajikistan',
+        'Tanzania',
+        'Thailand',
+        'Timor-Leste',
+        'Togo',
+        'Tonga',
+        'Trinidad and Tobago',
+        'Tunisia',
+        'Turkey',
+        'Turkmenistan',
+        'Tuvalu',
+        'Uganda',
+        'Ukraine',
+        'United Arab Emirates',
+        'United Kingdom',
+        'United States',
+        'Uruguay',
+        'Uzbekistan',
+        'Vanuatu',
+        'Vatican City',
+        'Venezuela',
+        'Vietnam',
+        'Yemen',
+        'Zambia',
+        'Zimbabwe'
     ];
 
     private $departments = [
-        'Bachelor of Informatics', 'Bachelor of Information System', 'Bachelor of Visual Communication Design', 'Bachelor of Communication Science'
-        , 'Master of Informatics', 'Master of Information System', 'Master of Visual Communication Design', 'Master of Communication Science'
+        "Bachelor of Informatics",
+        "Bachelor of Information System",
+        "Bachelor of Visual Communication Design",
+        "Bachelor of Communication Science",
+        "Bachelor of Animation",
+        "Bachelor of Management",
+        "Bachelor of Accounting",
+        "Bachelor of English Language",
+        "Bachelor of Japanese Literature",
+        "Applied Bachelor of Hotel Management",
+        "Bachelor of Public Health",
+        "Bachelor of Environmental Health",
+        "Diploma in Medical Record & Health Information",
+        "Bachelor of Electrical Engineering",
+        "Bachelor of Industrial Engineering",
+        "Bachelor of Biomedical Engineering",
+        "Bachelor of Medicine",
+        "Master of Informatics",
+        "Master of Management",
+        "Master of Accounting",
+        "Master of Public Health",
+        "Doctorate of Computer Science",
+        "Doctorate of Management"
     ];
     // Controller for Admin Authentication
 
@@ -74,7 +269,7 @@ class AdminController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        if(!$created) {
+        if (!$created) {
             return redirect()->route('admin.register')->with('error', 'Failed to create admin');
         }
 
@@ -110,25 +305,25 @@ class AdminController extends Controller
     }
 
     // Controller for Admin Dashboard
-    
+
     public function index(Request $request)
     {
         $year = $request->input('year', Carbon::now()->year);
         // Show the number of users every each nationlity
-        $results_nationality = DB::table('documents')
+        $data_nationlity = DB::table('documents')
             ->select('nationality as NATIONALITY', DB::raw('COUNT(nationality) as COUNTER'))
             ->whereYear('created_at', $year)
             ->groupBy('nationality')
             ->orderBy('nationality', 'asc')
             ->get();
-        
+
         // Convert the results to an array for easier use in the view
-        $data_nationlity = $results_nationality->map(function($item) {
-            return [
-                'NATIONALITY' => $item->NATIONALITY,
-                'COUNTER' => $item->COUNTER
-            ];
-        });
+        // $data_nationlity = $results_nationality->map(function ($item) {
+        //     return [
+        //         'NATIONALITY' => $item->NATIONALITY,
+        //         'COUNTER' => $item->COUNTER
+        //     ];
+        // });
 
         $results_department = DB::table('documents')
             ->select('department as DEPARTMENT', DB::raw('COUNT(department) as COUNTER'))
@@ -145,7 +340,7 @@ class AdminController extends Controller
             ->distinct('department')
             ->count('departments');
 
-        return view('admin.index',[
+        return view('admin.index', [
             'count_user_today' => Document::where('created_at', '>=', Carbon::today())->count(),
             'count_user' => Document::whereYear('created_at', $year)->count(),
             'data_nationlity' => $data_nationlity,
@@ -171,12 +366,54 @@ class AdminController extends Controller
         return Excel::download(new ApplywithFilterExport($year), 'applicants_' . $year . '.xlsx');
     }
 
+    public function makeZip($id)
+    {
+        $applicant = Apply::where('id', $id)->with('document')->first();
+        $document = $applicant->document;
+
+        $zip = new \ZipArchive();
+        $zipFileName = 'documents_' . $document->first_name . '_' . $document->family_name . '.zip';
+        $zipFilePath = storage_path('app/public/' . $zipFileName);
+
+        if ($zip->open($zipFilePath, \ZipArchive::CREATE) === TRUE) {
+            $files = [
+                'profile_picture' => $document->profile_picture,
+                'passport' => $document->passport,
+                'research_proposal' => $document->research_proposal,
+                'study_plan' => $document->study_plan,
+                'english_proficiency' => $document->english_proficiency,
+                'transcript' => $document->transcript,
+                'cv' => $document->cv,
+                'medical_checkup' => $document->medical_checkup,
+                'first_letter_of_recommendation' => $document->first_letter_of_recommendation,
+                'second_letter_of_recommendation' => $document->second_letter_of_recommendation,
+                'commitment_letter' => $document->commitment_letter
+            ];
+
+            foreach ($files as $key => $file) {
+                if ($file) {
+                    $filePath = Storage::path('public/' . $file);
+
+                    if (!file_exists($filePath)) {
+                        return redirect()->back()->with('error', 'File not found');
+                    }
+
+                    $zip->addFile($filePath, $key . '.' . pathinfo($file, PATHINFO_EXTENSION));
+                }
+            }
+
+            $zip->close();
+        }
+
+        return response()->download($zipFilePath)->deleteFileAfterSend(true);
+    }
+
     public function dashboard(Request $request)
     {
         $title = 'Delete User!';
         $text = "Are you sure you want to delete?";
         confirmDelete($title, $text);
-        
+
         $year = Carbon::now()->year;
         $perPage = $request->input('perPage', 10);
         $applicant = Apply::search($request->only('search'))
@@ -185,7 +422,8 @@ class AdminController extends Controller
             ->paginate($perPage)
             ->appends($request->query());
 
-        return view('admin.table',
+        return view(
+            'admin.table',
             [
                 'applicants' => $applicant,
                 'year' => $year
@@ -271,6 +509,7 @@ class AdminController extends Controller
             'medical_checkup' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'first_letter_of_recommendation' => 'nullable|file|mimes:pdf|max:2048',
             'second_letter_of_recommendation' => 'nullable|file|mimes:pdf|max:2048',
+            'commitment_letter' => 'nullable|file|mimes:pdf|max:2048'
         ]);
 
         DB::beginTransaction();
@@ -287,14 +526,21 @@ class AdminController extends Controller
                 'department' => $request->department,
                 'updated_at' => now()
             ];
-    
+
             $fileFields = [
-                'profile_picture', 'passport', 'research_proposal', 'study_plan',
-                'english_proficiency', 'transcript', 'cv',
-                'medical_checkup', 'first_letter_of_recommendation',
-                'second_letter_of_recommendation'
+                'profile_picture',
+                'passport',
+                'research_proposal',
+                'study_plan',
+                'english_proficiency',
+                'transcript',
+                'cv',
+                'medical_checkup',
+                'first_letter_of_recommendation',
+                'second_letter_of_recommendation',
+                'commitment_letter'
             ];
-    
+
             foreach ($fileFields as $field) {
                 if ($request->hasFile($field)) {
                     if ($document->$field) {
@@ -306,11 +552,11 @@ class AdminController extends Controller
                     $userData[$field] = $document->$field;
                 }
             }
-    
+
             $document->update($userData);
-    
+
             DB::commit();
-            
+
             FacadesAlert::toast('Documents edited successfully.', 'success');
             return redirect()->route('admin.showApplicant', $id);
         } catch (\Exception $e) {
@@ -337,7 +583,7 @@ class AdminController extends Controller
         //
     }
 
-    
+
     public function destroy(string $id, Request $request)
     {
         $apply = Apply::find($id);
@@ -349,6 +595,11 @@ class AdminController extends Controller
         try {
             $apply->delete();
             $apply->document->delete();
+
+            $queue = Queue::whereYear('year', Carbon::now()->year)->first();
+            if ($queue) {
+                $queue->decrement('count');
+            }
 
             DB::commit();
 
@@ -374,7 +625,8 @@ class AdminController extends Controller
             ->appends($request->query());
         $status = DB::table('statuses')->get();
 
-        return view('admin.status',
+        return view(
+            'admin.status',
             [
                 'applicants' => $applicant,
                 'statuses' => $status
@@ -466,12 +718,12 @@ class AdminController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ];
-    
-            if($request->hasFile('image')) {
+
+            if ($request->hasFile('image')) {
                 $image = $request->file('image')->store('public/blogs');
                 $blog['image'] = str_replace('public/', '', $image);
             }
-    
+
             Blog::create($blog);
 
             DB::commit();
@@ -499,15 +751,15 @@ class AdminController extends Controller
             'body' => 'required|string',
             'image' => 'nullable|mimes:jpg,jpeg,png|max:2048',
         ]);
-    
+
         $blog = Blog::find($id);
-    
+
         if (!$blog) {
             return redirect()->route('admin.editBlog', $id)->with('error', 'Blog not found');
         }
-    
+
         DB::beginTransaction();
-    
+
         try {
             $blogData = [
                 'title' => $request->title,
@@ -515,20 +767,20 @@ class AdminController extends Controller
                 'body' => $request->body,
                 'updated_at' => Carbon::now()
             ];
-    
+
             if ($request->hasFile('image')) {
                 if ($blog->image) {
                     Storage::delete('public/' . $blog->image);
                 }
-    
+
                 $image = $request->file('image')->store('public/blogs');
                 $blogData['image'] = str_replace('public/', '', $image);
             }
-    
+
             $blog->update($blogData);
-    
+
             DB::commit();
-            
+
             FacadesAlert::toast('Blog updated successfully', 'success');
             return redirect()->route('admin.blog');
         } catch (\Exception $e) {
@@ -571,29 +823,30 @@ class AdminController extends Controller
         confirmDelete($title, $text);
 
         $applicant = Apply::query()
-                                ->with('user', 'document')
-                                ->leftJoin('documents', 'applies.document_id', '=', 'documents.id')
-                                ->select('applies.id as apply_id','applies.*', 'documents.*');
+            ->with('user', 'document')
+            ->leftJoin('documents', 'applies.document_id', '=', 'documents.id')
+            ->select('applies.id as apply_id', 'applies.*', 'documents.*');
 
-        // dd($applicant);
-
-        if($request->has('year') && $request->year != null) {
+        if ($request->has('year') && $request->year != null) {
             $applicant = $applicant->whereYear('applies.created_at', $request->year);
         }
 
-        if($request->has('sort')){
+        if ($request->has('name')) {
+            $name = $request->name;
+            $applicant = $applicant->where(function ($query) use ($name) {
+                $query->where('documents.first_name', 'like', '%' . $name . '%')
+                    ->orWhere('documents.family_name', 'like', '%' . $name . '%')
+                    ->orWhere('documents.email', 'like', '%' . $name . '%');
+            });
+        }
+
+        if ($request->has('sort')) {
             switch ($request->sort) {
                 case 'first_name_asc':
                     $applicant = $applicant->orderBy('documents.first_name', 'asc');
                     break;
                 case 'first_name_desc':
                     $applicant = $applicant->orderBy('documents.first_name', 'desc');
-                    break;
-                case 'family_name_asc':
-                    $applicant = $applicant->orderBy('documents.family_name', 'asc');
-                    break;
-                case 'family_name_desc':
-                    $applicant = $applicant->orderBy('documents.family_name', 'desc');
                     break;
                 case 'nationality_asc':
                     $applicant = $applicant->orderBy('documents.nationality', 'asc');
@@ -610,7 +863,7 @@ class AdminController extends Controller
             }
         }
 
-        $applicantWithPage = $applicant->paginate(10)->withQueryString();
+        $applicantWithPage = $applicant->paginate(30)->withQueryString();
         return view('admin.all_data', [
             'applicants' => $applicantWithPage
         ]);
@@ -659,20 +912,20 @@ class AdminController extends Controller
         $text = "Are you sure you want to delete?";
         confirmDelete($title, $text);
 
-            if ($request->has('name')) {
-                $name = $request->name;
-                $users = User::whereHas('apply.document', function ($query) use ($name) {
-                    $query->where('first_name', 'like', '%' . $name . '%')
-                            ->orWhere('family_name', 'like', '%' . $name . '%')
-                            ->orWhere('email', 'like', '%' . $name . '%');
-                        })
-                        ->with('apply.document')
-                        ->orderBy('created_at', 'desc')
-                        ->paginate(30);
-                return view('admin.all_user', [
-                    'users' => $users
-                ]);
-            }
+        if ($request->has('name')) {
+            $name = $request->name;
+            $users = User::whereHas('apply.document', function ($query) use ($name) {
+                $query->where('first_name', 'like', '%' . $name . '%')
+                    ->orWhere('family_name', 'like', '%' . $name . '%')
+                    ->orWhere('email', 'like', '%' . $name . '%');
+            })
+                ->with('apply.document')
+                ->orderBy('created_at', 'desc')
+                ->paginate(30);
+            return view('admin.all_user', [
+                'users' => $users
+            ]);
+        }
 
         $users = User::with('apply.document')->paginate(30);
         return view('admin.all_user', [
@@ -710,9 +963,9 @@ class AdminController extends Controller
     {
         $search = $request->search;
         $users = User::where('name', 'like', '%' . $search . '%')
-                        ->orWhere('email', 'like', '%' . $search . '%')
-                        ->with('apply.document')
-                        ->paginate(30);
+            ->orWhere('email', 'like', '%' . $search . '%')
+            ->with('apply.document')
+            ->paginate(30);
         return view('admin.all_user', [
             'users' => $users
         ]);
@@ -743,5 +996,4 @@ class AdminController extends Controller
             return redirect()->route('admin.user')->with('error', 'Failed to delete user');
         }
     }
-
 }

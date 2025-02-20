@@ -48,13 +48,16 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
 
     // Archive
     // Route::get('/table/archive', [AdminController::class, 'archive'])->name('admin.archive');
-    Route::post('table/archive', [AdminController::class, 'archiveYear'])->name('admin.archiveYear');
+    Route::post('/table/archive', [AdminController::class, 'archiveYear'])->name('admin.archiveYear');
+
+    // Download ZIP
+    Route::get('/table/download-zip/{id}', [AdminController::class, 'makeZip'])->name('admin.downloadZip');
 
     // Status & Comment
     Route::get('/table/user-status', [AdminController::class, 'status'])->name('admin.status');
     Route::post('/table/user/{id}/update-status', [AdminController::class, 'updateStatus'])->name('admin.updateStatus');
     Route::patch('/table/user/comment', [AdminController::class, 'updateComment'])->name('admin.updateComment');
-    Route::prefix('admin')->group(function() {
+    Route::prefix('admin')->group(function () {
         // Blog
         Route::get('/blog', [AdminController::class, 'blog'])->name('admin.blog');
         Route::get('/blog/{id}/preview', [AdminController::class, 'showBlog'])->name('admin.showBlog');

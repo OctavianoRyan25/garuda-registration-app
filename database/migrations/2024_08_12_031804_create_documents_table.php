@@ -32,7 +32,8 @@ return new class extends Migration
             $table->string('cv');
             $table->string('medical_checkup');
             $table->string('first_letter_of_recommendation');
-            $table->string('second_letter_of_recommendation');
+            $table->string('second_letter_of_recommendation')->nullable()->default(null);
+            $table->string('commitment_letter');
             $table->timestamps();
         });
     }
