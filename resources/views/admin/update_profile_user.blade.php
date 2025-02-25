@@ -100,7 +100,7 @@
                             <div class="w-full px-3 xl:w-1/4 flex flex-col mt-1">
                                 <label for="date_of_birth" class="text-sm font-bold text-gray-600">Date of Birth<span
                                         class="text-red-500">*</span></label>
-                                <input type="text" name="birth_date" id="birth_date"
+                                <input type="date" name="birth_date" id="birth_date"
                                     value="{{ $applicant->document->birth_date }}"
                                     class="border border-gray-300 p-2 rounded-md mt-1 w-full" data-toggle="datepicker">
                                 @error('birth_date')
@@ -298,13 +298,6 @@
                 strictMode: true,
                 // separateDialCode: true,
                 utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@24.3.4/build/js/utils.js",
-            });
-
-            const elem = document.querySelector('input[name="birth_date"]');
-            const datepicker = new Datepicker(elem, {
-                autohide: true,
-                buttonClass: 'btn',
-                format: 'dd-mm-yyyy',
             });
 
             const departmentSelect = document.querySelector('#department');

@@ -231,8 +231,7 @@
                                 </div>
                                 <div class="w-full px-3 xl:w-1/3">
                                     <label for="second_letter_of_recommendation"
-                                        class="text-sm font-bold text-gray-600">Second Letter Recommendation<span
-                                            class="text-red-500">*</span></label>
+                                        class="text-sm font-bold text-gray-600">Second Letter Recommendation</label>
                                     <input id="second_letter_of_recommendation" type="file"
                                         name="second_letter_of_recommendation"
                                         class="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60" />

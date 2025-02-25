@@ -531,7 +531,7 @@ class UserController extends Controller
 
             DB::commit();
 
-            Alert::toast('Documents uploaded successfully.', 'success');
+            Alert::toast('Profile update successfully.', 'success');
             return redirect('/profile');
         } catch (\Throwable $th) {
             DB::rollBack();
